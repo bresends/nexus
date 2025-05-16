@@ -1,16 +1,27 @@
-from config.env import load_environment_variables
-from services.LLM import LLMService
+from pydantic import BaseModel, Field
+from services.llm_factory import LLMFactory
 
 def main():
-    env_vars = load_environment_variables()
 
-    llm_service = LLMService(env_vars)
+    class CompletionModel(BaseModel):
+        reasoning: str = Field(description="Explain your reasoning for the response.")
+        response: str = Field(description="Your response to the user.")
 
-    query = "Hi there, I have a question about my bill. Can you help me?"
-    response = llm_service.get_response(query)
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user","content": "Hi there, I have a question about my bill. Can you help me?"},
+    ]
 
-    print(response)
+    llm = LLMFactory("github_models")
 
+    completion = llm.create_completion(
+        response_model=CompletionModel,
+        messages=messages,
+    )
+    assert isinstance(completion, CompletionModel)
+
+    print(f"Reasoning: {completion.reasoning}")
+    print(f"Response: {completion.response}\n")
 
 if __name__ == "__main__":
     main()

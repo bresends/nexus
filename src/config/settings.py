@@ -13,8 +13,9 @@ class LLMProviderSettings(BaseSettings):
     max_retries: int = 3
 
 class GithubOpenAISettings(LLMProviderSettings):
-    api_key: str = os.getenv("GITHUB_OPENAI_API_KEY")
+    api_key: str = os.getenv("GITHUB_MODELS_API_KEY")
     default_model: str = "openai/gpt-4.1-mini"
+    base_url: str = "https://models.github.ai/inference"
 
 
 class OpenAISettings(LLMProviderSettings):
@@ -39,7 +40,7 @@ class Settings(BaseSettings):
     openai: OpenAISettings = OpenAISettings()
     anthropic: AnthropicSettings = AnthropicSettings()
     llama: LlamaSettings = LlamaSettings()
-    github_openai: GithubOpenAISettings = GithubOpenAISettings()
+    github_models: GithubOpenAISettings = GithubOpenAISettings()
 
 @lru_cache
 def get_settings():

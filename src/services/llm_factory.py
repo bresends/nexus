@@ -4,7 +4,7 @@ import instructor
 from anthropic import Anthropic
 from config.settings import get_settings
 from openai import OpenAI
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class LLMFactory:
@@ -16,6 +16,12 @@ class LLMFactory:
     def _initialize_client(self) -> Any:
         client_initializers = {
             "openai": lambda s: instructor.from_openai(OpenAI(api_key=s.api_key)),
+            "github_models": lambda s: instructor.from_openai(
+                OpenAI(
+                    api_key=s.api_key,
+                    base_url=s.base_url,
+                )
+            ),
             "anthropic": lambda s: instructor.from_anthropic(
                 Anthropic(api_key=s.api_key)
             ),
@@ -42,28 +48,3 @@ class LLMFactory:
             "messages": messages,
         }
         return self.client.chat.completions.create(**completion_params)
-
-
-if __name__ == "__main__":
-
-    class CompletionModel(BaseModel):
-        response: str = Field(description="Your response to the user.")
-        reasoning: str = Field(description="Explain your reasoning for the response.")
-
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {
-            "role": "user",
-            "content": "If it takes 2 hours to dry 1 shirt out in the sun, how long will it take to dry 5 shirts?",
-        },
-    ]
-
-    llm = LLMFactory("openai")
-    completion = llm.create_completion(
-        response_model=CompletionModel,
-        messages=messages,
-    )
-    assert isinstance(completion, CompletionModel)
-
-    print(f"Response: {completion.response}\n")
-    print(f"Reasoning: {completion.reasoning}")
