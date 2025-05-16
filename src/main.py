@@ -6,7 +6,7 @@ def main():
 
     llm_service = LLMService(env_vars)
 
-    query = "Explain to me how AI works"
+    query = "Hi there, I have a question about my bill. Can you help me?"
     response = llm_service.get_response(query)
 
     print(response)
