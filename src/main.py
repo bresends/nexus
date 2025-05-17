@@ -1,34 +1,25 @@
-from pydantic import BaseModel, Field
-from services.llm_factory import LLMFactory
-from prompts.prompt_manager import PromptManager
+import json
+from pipelines.pkm.new_info_evaluator import NewInfoEvaluatorPipeline
 
 
 def main():
+    # Create the pipeline
+    pipeline = NewInfoEvaluatorPipeline()
 
-    class CompletionModel(BaseModel):
-        reasoning: str = Field(description="Explain your reasoning for the response.")
-        response: str = Field(description="Your response to the user.")
+    # Get the projects
+    projects = pipeline.get_projects()
+    print("Available projects:")
+    for project in projects:
+        print(f"- {project['name']}: {project['description']}")
 
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user","content": "Hi there, I have a question about my bill. Can you help me?"},
-    ]
-
-    llm = LLMFactory("github_models")
-
-    completion = llm.create_completion(
-        response_model=CompletionModel,
-        messages=messages,
+    print("\nEvaluating new information...")
+    # Evaluate new information
+    result = pipeline.evaluate_new_info(
+        user_input="I want to start gardening. What do you think?",
     )
-    assert isinstance(completion, CompletionModel)
 
-    print(f"Reasoning: {completion.reasoning}")
-    print(f"Response: {completion.response}\n")
-
-    # Example of using the PromptManager
-    example_prompt = PromptManager.get_prompt(
-        "mneumonics", topic="Anterior e Posterior"
-    )
+    # Print the result
+    print(json.dumps(result.model_dump(), indent=4))
 
 
 if __name__ == "__main__":

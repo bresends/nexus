@@ -30,8 +30,6 @@ def test_eval():
     with open(dataset_path, "r") as f:
         data = json.load(f)["data"]
 
-
-
     llm = LLMFactory("github_models")
 
     for entry in data:
