@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 from services.llm_factory import LLMFactory
+from prompts.prompt_manager import PromptManager
+
 
 def main():
 
@@ -22,6 +24,12 @@ def main():
 
     print(f"Reasoning: {completion.reasoning}")
     print(f"Response: {completion.response}\n")
+
+    # Example of using the PromptManager
+    example_prompt = PromptManager.get_prompt(
+        "mneumonics", topic="Anterior e Posterior"
+    )
+
 
 if __name__ == "__main__":
     main()

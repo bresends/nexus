@@ -1,0 +1,21 @@
+{
+  "name": "Sentiment Analysis",
+  "description": "A dataset for sentiment analysis tasks.",
+  "data": [
+    {
+      "text": "I love this product!",
+      "label": "positive",
+      "confidence": 0.95
+    },
+    {
+      "text": "This is the worst experience I've ever had.",
+      "label": "negative",
+      "confidence": 0.98
+    },
+    {
+      "text": "It's okay, not great but not terrible either.",
+      "label": "neutral",
+      "confidence": 0.75
+    }
+  ]
+}
