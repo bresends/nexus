@@ -834,6 +834,7 @@ dependencies = [
     { name = "pytest" },
     { name = "python-dotenv" },
     { name = "python-frontmatter" },
+    { name = "rich" },
 ]
 
 [package.dev-dependencies]
@@ -853,6 +854,7 @@ requires-dist = [
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "python-frontmatter", specifier = ">=1.1.0" },
+    { name = "rich", specifier = ">=13.9.4" },
 ]
 
 [package.metadata.requires-dev]
