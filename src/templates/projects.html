@@ -3,27 +3,188 @@
 {% block title %}Projects{% endblock %}
 
 {% block content %}
-<h1>Projects</h1>
-<div class="row">
-    {% for project in projects %}
-    <div class="col-md-6 mb-4">
-        <div class="card">
+<!-- Project stats cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(99, 95, 199, 0.05), rgba(99, 95, 199, 0.1));">
             <div class="card-body">
-                <h5 class="card-title">{{ project.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">Status: {{ project.status }}</h6>
-                <p class="card-text">{{ project.description }}</p>
-                <p><strong>Purpose:</strong> {{ project.purpuse }}</p>
-                <p><strong>Desired Outcome:</strong> {{ project.desired_outcome }}</p>
-                <p><strong>Priority:</strong> {{ project.priority }}</p>
-                <p class="text-muted">
-                    Created: {{ project.created_at.strftime('%Y-%m-%d') }}
-                    {% if project.deadline %}
-                    | Deadline: {{ project.deadline.strftime('%Y-%m-%d') }}
-                    {% endif %}
-                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Projects</h6>
+                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|length }}</h2>
+                    </div>
+                    <div style="background-color: rgba(99, 95, 199, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: var(--primary-color); font-size: 24px;">folder</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    {% endfor %}
+    <div class="col-md-3">
+        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(255, 165, 0, 0.05), rgba(255, 165, 0, 0.1));">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">In Progress</h6>
+                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('status', 'equalto', 'In Progress')|list|length }}</h2>
+                    </div>
+                    <div style="background-color: rgba(255, 165, 0, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: var(--warning); font-size: 24px;">pending_actions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(78, 203, 113, 0.05), rgba(78, 203, 113, 0.1));">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Completed</h6>
+                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('status', 'equalto', 'Completed')|list|length }}</h2>
+                    </div>
+                    <div style="background-color: rgba(78, 203, 113, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: var(--success); font-size: 24px;">check_circle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(234, 85, 85, 0.05), rgba(234, 85, 85, 0.1));">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">High Priority</h6>
+                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('priority', 'equalto', 'High')|list|length }}</h2>
+                    </div>
+                    <div style="background-color: rgba(234, 85, 85, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
+                        <span class="material-icons" style="color: var(--danger); font-size: 24px;">priority_high</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Projects</h1>
+        <button class="btn btn-primary" style="background-color: var(--primary-color); border: none; border-radius: var(--radius-sm);">
+            <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">add</span>
+            New Project
+        </button>
+    </div>
+
+    <div class="filter-bar mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0" style="border-radius: var(--radius-sm) 0 0 var(--radius-sm);">
+                        <span class="material-icons text-muted" style="font-size: 1rem;">search</span>
+                    </span>
+                    <input type="text" class="form-control border-start-0" placeholder="Search projects..."
+                        style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0; box-shadow: none;">
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                    <select class="form-select" style="max-width: 140px; border-radius: var(--radius-sm);">
+                        <option selected>Status</option>
+                        <option>Planning</option>
+                        <option>In Progress</option>
+                        <option>Completed</option>
+                        <option>On Hold</option>
+                    </select>
+                    <select class="form-select" style="max-width: 140px; border-radius: var(--radius-sm);">
+                        <option selected>Priority</option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                    <button class="btn btn-light" style="border-radius: var(--radius-sm);">
+                        <span class="material-icons" style="font-size: 1rem;">filter_list</span>
+                        More Filters
+                    </button>
+                    <button class="btn btn-light" style="border-radius: var(--radius-sm);">
+                        <span class="material-icons" style="font-size: 1rem;">view_module</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                    <th>Desired Outcome</th>
+                    <th>Priority</th>
+                    <th>Created</th>
+                    <th>Deadline</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td>
+                        <a href="#" class="project-name">{{ project.name }}</a>
+                    </td>
+                    <td>
+                        {% set status_classes = {
+                            'Planning': 'status-planning',
+                            'In Progress': 'status-in-progress',
+                            'Completed': 'status-completed',
+                            'On Hold': 'status-on-hold'
+                        } %}
+                        <span class="status-badge {{ status_classes.get(project.status, 'status-planning') }}">
+                            {{ project.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ project.description }}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ project.purpose }}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ project.desired_outcome }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="priority">
+                            {% set priority_classes = {
+                                'High': 'priority-high',
+                                'Medium': 'priority-medium',
+                                'Low': 'priority-low'
+                            } %}
+                            <span class="priority-indicator {{ priority_classes.get(project.priority, 'priority-medium') }}"></span>
+                            {{ project.priority }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="date-pill">{{ project.created_at.strftime('%Y-%m-%d') }}</span>
+                    </td>
+                    <td>
+                        {% if project.deadline %}
+                        <span class="date-pill">{{ project.deadline.strftime('%Y-%m-%d') }}</span>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
