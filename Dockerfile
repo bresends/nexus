@@ -18,8 +18,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
 
 # Expose the application port
-EXPOSE 8000
+EXPOSE 5000
 
 WORKDIR /app/src
 # Run with gunicorn
-CMD ["uv", "run", "gunicorn", "app:app", "--bind", "0.0.0.0:8000"]
+CMD ["uv", "run", "gunicorn", "app:app", "--bind", "0.0.0.0:5000"]

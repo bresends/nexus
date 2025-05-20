@@ -9,3 +9,7 @@ def create_app():
 
 # Create an instance for Gunicorn to find
 app = create_app()
+
+if __name__ == "__main__":
+    # Run the app with Flask's built-in server for development
+    app.run(host="0.0.0.0", debug=True)
