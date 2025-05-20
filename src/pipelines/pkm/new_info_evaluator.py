@@ -3,12 +3,15 @@ from pydantic import BaseModel, Field
 from services.llm_factory import LLMFactory
 from prompts.prompt_manager import PromptManager
 from typing import List, Dict
+from database.database import SessionLocal
+from models.project import Project
 
 
 class NewInfoRelevance(str, Enum):
     NO_RELEVANCE = "no_relevance"
     WEAK_RELEVANCE = "weak_relevance"
     STRONG_RELEVANCE = "strong_relevance"
+
 
 class NewInfoAction(str, Enum):
     ADD_TO_PROJECT = "add_to_project"
@@ -24,7 +27,9 @@ class NewInfoClassification(BaseModel):
         description="Your confidence score for the relevance classification between 0 and 1.",
     )
     confidence_explanation: str = Field(description="Explain your confidence score.")
-    action: NewInfoAction = Field(description="What action should be taken with the new information?")
+    action: NewInfoAction = Field(
+        description="What action should be taken with the new information?"
+    )
 
 
 class NewInfoEvaluatorPipeline:
@@ -33,28 +38,30 @@ class NewInfoEvaluatorPipeline:
     def __init__(self, llm_provider: str = "github_models"):
         self.llm = LLMFactory(llm_provider)
 
-    def get_projects(self) -> List[Dict[str, str]]:
-        SAMPLE_PROJECTS = [
-            {
-                "name": "AI Research",
-                "description": "Researching new AI models and their applications.",
-            },
-            {
-                "name": "Personal Finance",
-                "description": "Tracking and optimizing personal expenses and investments.",
-            },
-            {
-                "name": "Fitness Goals",
-                "description": "Improving health through regular exercise and nutrition.",
-            },
-        ]
-        return SAMPLE_PROJECTS
+    def get_projects(self):
+        db = SessionLocal()
+        try:
+            projects = db.query(Project).all()
+            return [project.to_dict() for project in projects]
+        finally:
+            db.close()
 
     def evaluate_new_info(
         self,
         user_input: str,
     ) -> NewInfoClassification:
         projects = self.get_projects()
+
+        if not projects:
+            raise ValueError("No projects found in the database.")
+
+        # Display the projects in a user-friendly format
+        projects_str = "\n".join(
+            [f"ID: {project['id']} | Name: {project['name']} | Status: {project['status']}" for project in projects]
+        )
+
+        print(f"Projects in the database:\n{projects_str}")
+        print("--" * 50)
 
         system_prompt = PromptManager.get_prompt("evaluate_new_info", projects=projects)
 

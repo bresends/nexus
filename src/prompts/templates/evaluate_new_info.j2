@@ -14,6 +14,14 @@ created_at: 2023-10-05
 
 <projects>
     {% for project in projects %}
-        - {{ project.name }}: {{ project.description }}
+        - Name: {{ project.name }}
+        - Description: {{ project.description }}
+        - Purpose: {{ project.purpuse }}
+        - Desired Outcome: {{ project.desired_outcome }}
+        - Created At: {{ project.created_at }}
+        - Deadline: {{ project.deadline }}
+        - Status: {{ project.status }}
+        - Priority: {{ project.priority }}
+        - Updated At: {{ project.updated_at }}
     {% endfor %}
 </projects>

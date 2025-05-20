@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<h1>Projects</h1>
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Status: {{ project.status }}</h6>
+                <p class="card-text">{{ project.description }}</p>
+                <p><strong>Purpose:</strong> {{ project.purpuse }}</p>
+                <p><strong>Desired Outcome:</strong> {{ project.desired_outcome }}</p>
+                <p><strong>Priority:</strong> {{ project.priority }}</p>
+                <p class="text-muted">
+                    Created: {{ project.created_at.strftime('%Y-%m-%d') }}
+                    {% if project.deadline %}
+                    | Deadline: {{ project.deadline.strftime('%Y-%m-%d') }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
