@@ -6,60 +6,60 @@
 <!-- Project stats cards -->
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(99, 95, 199, 0.05), rgba(99, 95, 199, 0.1));">
+        <div class="card stat-card stat-card-primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Projects</h6>
-                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|length }}</h2>
+                        <h6 class="text-muted mb-1 stat-card-label">Total Projects</h6>
+                        <h2 class="mb-0 stat-card-value">{{ projects|length }}</h2>
                     </div>
-                    <div style="background-color: rgba(99, 95, 199, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="color: var(--primary-color); font-size: 24px;">folder</span>
+                    <div class="stat-icon-container stat-icon-primary">
+                        <span class="material-icons stat-icon text-primary">folder</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(255, 165, 0, 0.05), rgba(255, 165, 0, 0.1));">
+        <div class="card stat-card stat-card-warning">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">In Progress</h6>
-                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('status', 'equalto', 'In Progress')|list|length }}</h2>
+                        <h6 class="text-muted mb-1 stat-card-label">In Progress</h6>
+                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('status', 'equalto', 'In Progress')|list|length }}</h2>
                     </div>
-                    <div style="background-color: rgba(255, 165, 0, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="color: var(--warning); font-size: 24px;">pending_actions</span>
+                    <div class="stat-icon-container stat-icon-warning">
+                        <span class="material-icons stat-icon text-warning">pending_actions</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(78, 203, 113, 0.05), rgba(78, 203, 113, 0.1));">
+        <div class="card stat-card stat-card-success">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Completed</h6>
-                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('status', 'equalto', 'Completed')|list|length }}</h2>
+                        <h6 class="text-muted mb-1 stat-card-label">Completed</h6>
+                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('status', 'equalto', 'Completed')|list|length }}</h2>
                     </div>
-                    <div style="background-color: rgba(78, 203, 113, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="color: var(--success); font-size: 24px;">check_circle</span>
+                    <div class="stat-icon-container stat-icon-success">
+                        <span class="material-icons stat-icon text-success">check_circle</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card border-0" style="border-radius: var(--radius-md); box-shadow: var(--shadow-sm); background: linear-gradient(to right, rgba(234, 85, 85, 0.05), rgba(234, 85, 85, 0.1));">
+        <div class="card stat-card stat-card-danger">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">High Priority</h6>
-                        <h2 class="mb-0" style="font-weight: 700;">{{ projects|selectattr('priority', 'equalto', 'High')|list|length }}</h2>
+                        <h6 class="text-muted mb-1 stat-card-label">High Priority</h6>
+                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('priority', 'equalto', 'High')|list|length }}</h2>
                     </div>
-                    <div style="background-color: rgba(234, 85, 85, 0.15); width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                        <span class="material-icons" style="color: var(--danger); font-size: 24px;">priority_high</span>
+                    <div class="stat-icon-container stat-icon-danger">
+                        <span class="material-icons stat-icon text-danger">priority_high</span>
                     </div>
                 </div>
             </div>
@@ -70,8 +70,8 @@
 <div class="content-container">
     <div class="page-header">
         <h1 class="page-title">Projects</h1>
-        <button class="btn btn-primary" style="background-color: var(--primary-color); border: none; border-radius: var(--radius-sm);">
-            <span class="material-icons" style="font-size: 1rem; vertical-align: middle;">add</span>
+        <button class="btn btn-primary btn-add">
+            <span class="material-icons btn-icon">add</span>
             New Project
         </button>
     </div>
@@ -79,35 +79,34 @@
     <div class="filter-bar mb-4">
         <div class="row g-3 align-items-center">
             <div class="col-lg-4">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0" style="border-radius: var(--radius-sm) 0 0 var(--radius-sm);">
-                        <span class="material-icons text-muted" style="font-size: 1rem;">search</span>
+                <div class="input-group search-input-group">
+                    <span class="input-group-text border-end-0">
+                        <span class="material-icons text-muted search-icon">search</span>
                     </span>
-                    <input type="text" class="form-control border-start-0" placeholder="Search projects..."
-                        style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0; box-shadow: none;">
+                    <input type="text" class="form-control border-start-0" placeholder="Search projects...">
                 </div>
             </div>
             <div class="col-lg-8">
                 <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
-                    <select class="form-select" style="max-width: 140px; border-radius: var(--radius-sm);">
+                    <select class="form-select filter-select">
                         <option selected>Status</option>
                         <option>Planning</option>
                         <option>In Progress</option>
                         <option>Completed</option>
                         <option>On Hold</option>
                     </select>
-                    <select class="form-select" style="max-width: 140px; border-radius: var(--radius-sm);">
+                    <select class="form-select filter-select">
                         <option selected>Priority</option>
                         <option>High</option>
                         <option>Medium</option>
                         <option>Low</option>
                     </select>
-                    <button class="btn btn-light" style="border-radius: var(--radius-sm);">
-                        <span class="material-icons" style="font-size: 1rem;">filter_list</span>
+                    <button class="btn btn-light btn-rounded">
+                        <span class="material-icons btn-icon">filter_list</span>
                         More Filters
                     </button>
-                    <button class="btn btn-light" style="border-radius: var(--radius-sm);">
-                        <span class="material-icons" style="font-size: 1rem;">view_module</span>
+                    <button class="btn btn-light btn-rounded">
+                        <span class="material-icons btn-icon">view_module</span>
                     </button>
                 </div>
             </div>
@@ -146,17 +145,17 @@
                         </span>
                     </td>
                     <td>
-                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <div class="truncate-text">
                             {{ project.description }}
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <div class="truncate-text">
                             {{ project.purpose }}
                         </div>
                     </td>
                     <td>
-                        <div style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <div class="truncate-text">
                             {{ project.desired_outcome }}
                         </div>
                     </td>

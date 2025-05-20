@@ -168,3 +168,143 @@ body {
     padding: 0.75rem;
   }
 }
+
+/* Navbar styles */
+.app-navbar {
+  background-color: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand-custom {
+  color: var(--primary-color);
+}
+
+.navbar-brand-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Button styles */
+.btn-add {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: var(--radius-sm);
+}
+
+.btn-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.btn-rounded {
+  border-radius: var(--radius-sm);
+}
+
+/* Search input styles */
+.search-input-group .input-group-text {
+  background-color: var(--white);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  border-right: 0;
+}
+
+.search-input-group .form-control {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-left: 0;
+  box-shadow: none;
+}
+
+.search-icon {
+  font-size: 1rem;
+}
+
+/* Filter styles */
+.filter-select {
+  max-width: 140px;
+  border-radius: var(--radius-sm);
+}
+
+/* Card styles */
+.stat-card {
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card-primary {
+  background: linear-gradient(to right, rgba(99, 95, 199, 0.05), rgba(99, 95, 199, 0.1));
+}
+
+.stat-card-warning {
+  background: linear-gradient(to right, rgba(255, 165, 0, 0.05), rgba(255, 165, 0, 0.1));
+}
+
+.stat-card-success {
+  background: linear-gradient(to right, rgba(78, 203, 113, 0.05), rgba(78, 203, 113, 0.1));
+}
+
+.stat-card-danger {
+  background: linear-gradient(to right, rgba(234, 85, 85, 0.05), rgba(234, 85, 85, 0.1));
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card-value {
+  font-weight: 700;
+}
+
+.stat-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-primary {
+  background-color: rgba(99, 95, 199, 0.15);
+}
+
+.stat-icon-warning {
+  background-color: rgba(255, 165, 0, 0.15);
+}
+
+.stat-icon-success {
+  background-color: rgba(78, 203, 113, 0.15);
+}
+
+.stat-icon-danger {
+  background-color: rgba(234, 85, 85, 0.15);
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-warning {
+  color: var(--warning) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+/* Truncated text */
+.truncate-text {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
