@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for promptlab on 2025-05-17T21:54:13-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'promptlab'
 primary_region = 'gig'
 
