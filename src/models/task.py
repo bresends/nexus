@@ -1,28 +1,28 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, func
+from sqlalchemy import Column, Integer, String, DateTime, Text, func, ForeignKey
 from sqlalchemy.orm import relationship
 from database.database import Base
 
 metadata = Base.metadata
 
 
-class Project(Base):
-    __tablename__ = "projects"
+class Task(Base):
+    __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     name = Column(String(255), nullable=False)
-    purpose = Column(Text)
     description = Column(Text)
-    desired_outcome = Column(Text)
+    status = Column(String(50), default="todo")  # e.g., todo, in progress, done
+    priority = Column(String(50), default="medium")  # e.g., low, medium, high
     created_at = Column(DateTime, default=func.now())
-    deadline = Column(DateTime)
-    status = Column(String(50), default="active")
-    priority = Column(String(50), default="normal")
     updated_at = Column(
         DateTime,
         default=func.now(),
         onupdate=func.now(),
     )
-    tasks = relationship("Task", back_populates="project")
+    due_date = Column(DateTime, nullable=True)
+
+    project = relationship("Project", back_populates="tasks")
 
     def to_dict(self):
         # Return all column fields dynamically

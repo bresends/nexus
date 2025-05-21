@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from datetime import datetime
 from models.project import Project
+from models.task import Task
 from database.database import SessionLocal
 from sqlalchemy import exc
 
@@ -62,7 +63,11 @@ def project_detail(project_id):
         project = db.query(Project).filter(Project.id == project_id).first()
         if project is None:
             return "Project not found", 404
-        return render_template("projects/project_detail.html", project=project)
+        # Fetch tasks related to the project
+        tasks = db.query(Task).filter(Task.project_id == project_id).all()
+        return render_template(
+            "projects/project_detail.html", project=project, tasks=tasks
+        )  # Pass tasks to template
     finally:
         db.close()
 
