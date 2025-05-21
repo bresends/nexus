@@ -10,7 +10,7 @@ class Project(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
-    purpuse = Column(Text)
+    purpose = Column(Text)
     description = Column(Text)
     desired_outcome = Column(Text)
     created_at = Column(DateTime, default=func.now())
