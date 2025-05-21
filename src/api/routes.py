@@ -422,3 +422,29 @@ def reorder_tasks(project_id):
         return {"status": "error", "message": str(e)}, 500
     finally:
         db.close()
+
+
+@projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>")
+def task_detail(project_id, task_id):
+    db = SessionLocal()
+    try:
+        project = db.query(Project).filter(Project.id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
+        if not project:
+            flash("Project not found.", "danger")
+            return redirect(url_for("projects.list_projects"))
+        if not task:
+            flash("Task not found.", "danger")
+            return redirect(url_for("projects.project_detail", project_id=project_id))
+        
+        return render_template(
+            "tasks/task_detail.html",
+            task=task,
+            project=project,
+        )
+    finally:
+        db.close()

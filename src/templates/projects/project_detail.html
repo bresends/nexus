@@ -126,7 +126,11 @@
                             {% for task in tasks %}
                             <tr draggable="true" data-task-id="{{ task.id }}" class="task-row">
                                 <td class="drag-handle"><span class="material-icons">drag_indicator</span></td>
-                                <td><strong>{{ task.name }}</strong></td>
+                                <td>
+                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task-name-link">
+                                        <strong>{{ task.name }}</strong>
+                                    </a>
+                                </td>
                                 <td>
                                     <div class="truncate-text">
                                         {% if task.description %}{{ task.description }}{% else %}-{% endif %}
@@ -156,6 +160,9 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--view" title="View Task">
+                                        <span class="material-icons">visibility</span>
+                                    </a>
                                     <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--edit" title="Edit Task">
                                         <span class="material-icons">edit</span>
                                     </a>

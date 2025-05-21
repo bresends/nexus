@@ -317,3 +317,44 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Task name link styling */
+.task-name-link {
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.task-name-link:hover {
+  color: var(--primary-color);
+}
+
+.task-name-link:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.task-name-link:hover:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* View task button styling */
+.action-button-icon--view {
+  color: var(--primary-color);
+}
+
+.action-button-icon--view:hover {
+  color: var(--primary-color);
+  background-color: rgba(99, 95, 199, 0.1);
+}

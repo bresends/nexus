@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ task.name }}{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <!-- Task Header Section -->
+    <div class="project-header">
+        <div>
+            <h1 class="project-header__title">{{ task.name }}</h1>
+            <div class="project-header__meta">
+                <span class="status-badge status-{{ task.status | lower | replace(' ', '-') }}">
+                    {{ task.status }}
+                </span>
+
+                {% set priority_classes = {
+                    'High': 'priority-high',
+                    'Medium': 'priority-medium',
+                    'Low': 'priority-low'
+                } %}
+                <span class="project-priority project-priority--{{ priority_classes.get(task.priority, 'priority-medium') }}">
+                    {{ task.priority }} Priority
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Metadata -->
+    <div class="project-meta">
+        <div class="meta-card">
+            <div class="meta-card__label">Project</div>
+            <div class="meta-card__content">
+                <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="meta-link">
+                    <span class="material-icons date-pill__icon">folder</span>
+                    {{ project.name }}
+                </a>
+            </div>
+        </div>
+
+        <div class="meta-card">
+            <div class="meta-card__label">Created</div>
+            <div class="meta-card__content">
+                <span class="date-pill">
+                    <span class="material-icons date-pill__icon">calendar_today</span>
+                    {{ task.created_at.strftime('%b %d, %Y') }}
+                </span>
+            </div>
+        </div>
+
+        <div class="meta-card">
+            <div class="meta-card__label">Due Date</div>
+            <div class="meta-card__content">
+                {% if task.due_date %}
+                    <span class="date-pill">
+                        <span class="material-icons date-pill__icon">event</span>
+                        {{ task.due_date.strftime('%b %d, %Y') }}
+                    </span>
+                {% else %}
+                    <span class="text-muted">No due date set</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="meta-card">
+            <div class="meta-card__label">Updated</div>
+            <div class="meta-card__content">
+                <span class="date-pill">
+                    <span class="material-icons date-pill__icon">update</span>
+                    {{ task.updated_at.strftime('%b %d, %Y') }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Description Section -->
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">description</span>
+            Description
+        </h2>
+        <div class="project-section__content">
+            {{ task.description or "No description provided." }}
+        </div>
+    </div>
+
+    <!-- Task Sequence Section -->
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">sort</span>
+            Sequence Position
+        </h2>
+        <div class="project-section__content">
+            <p>This task is at position <strong>#{{ task.sort_order + 1 }}</strong> in the task list.</p>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="project-actions">
+        <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="action-button action-button--back">
+            <span class="material-icons action-button__icon">arrow_back</span> Back to Project
+        </a>
+        <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button action-button--edit">
+            <span class="material-icons action-button__icon">edit</span> Edit Task
+        </a>
+        <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button action-button--delete">
+            <span class="material-icons action-button__icon">delete</span> Delete
+        </a>
+    </div>
+</div>
+{% endblock %}
