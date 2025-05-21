@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <!-- Project Header Section -->
+    <div class="project-header">
+        <div>
+            <h1 class="project-title">{{ project.name }}</h1>
+            <div class="d-flex align-items-center mt-2">
+                {% set status_classes = {
+                    'Planning': 'status-planning',
+                    'In Progress': 'status-in-progress',
+                    'Completed': 'status-completed',
+                    'On Hold': 'status-on-hold'
+                } %}
+                <span class="status-badge {{ status_classes.get(project.status, 'status-planning') }}">
+                    {{ project.status }}
+                </span>
+
+                <div class="ms-3">
+                    {% set priority_classes = {
+                        'High': 'priority-high',
+                        'Medium': 'priority-medium',
+                        'Low': 'priority-low'
+                    } %}
+                    <span class="priority-indicator {{ priority_classes.get(project.priority, 'priority-medium') }}">
+                        {{ project.priority }} Priority
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Metadata -->
+    <div class="project-meta">
+        <div class="meta-card">
+            <div class="meta-label">Created</div>
+            <div class="meta-content">
+                <span class="date-pill">
+                    <span class="material-icons">calendar_today</span>
+                    {{ project.created_at.strftime('%b %d, %Y') }}
+                </span>
+            </div>
+        </div>
+
+        <div class="meta-card">
+            <div class="meta-label">Deadline</div>
+            <div class="meta-content">
+                {% if project.deadline %}
+                    <span class="date-pill">
+                        <span class="material-icons">event</span>
+                        {{ project.deadline.strftime('%b %d, %Y') }}
+                    </span>
+                {% else %}
+                    <span class="text-muted">No deadline set</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="meta-card">
+            <div class="meta-label">Updated</div>
+            <div class="meta-content">
+                <span class="date-pill">
+                    <span class="material-icons">update</span>
+                    {{ project.updated_at.strftime('%b %d, %Y') }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Description Section -->
+    <div class="project-description-card">
+        <h2 class="section-title">
+            <span class="material-icons">description</span>
+            Description
+        </h2>
+        <div class="section-content">
+            {{ project.description or "No description provided." }}
+        </div>
+    </div>
+
+    <!-- Project Purpose Section -->
+    <div class="project-description-card">
+        <h2 class="section-title">
+            <span class="material-icons">lightbulb</span>
+            Purpose
+        </h2>
+        <div class="section-content">
+            {{ project.purpose or "No purpose specified." }}
+        </div>
+    </div>
+
+    <!-- Desired Outcome Section -->
+    <div class="project-description-card">
+        <h2 class="section-title">
+            <span class="material-icons">check_circle</span>
+            Desired Outcome
+        </h2>
+        <div class="section-content">
+            {{ project.desired_outcome or "No desired outcome specified." }}
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex mt-4">
+        <a href="{{ url_for('projects.list_projects') }}" class="action-button btn-back">
+            <span class="material-icons">arrow_back</span> Back to Projects
+        </a>
+        <button class="action-button btn-edit">
+            <span class="material-icons">edit</span> Edit Project
+        </button>
+        <button class="action-button btn-delete">
+            <span class="material-icons">delete</span> Delete
+        </button>
+    </div>
+</div>
+{% endblock %}

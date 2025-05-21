@@ -131,7 +131,7 @@
                 {% for project in projects %}
                 <tr>
                     <td>
-                        <a href="#" class="project-name">{{ project.name }}</a>
+                        <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="project-name">{{ project.name }}</a>
                     </td>
                     <td>
                         {% set status_classes = {
