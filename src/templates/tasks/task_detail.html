@@ -78,8 +78,8 @@
             <span class="material-icons project-section__icon">description</span>
             Description
         </h2>
-        <div class="project-section__content">
-            {{ task.description or "No description provided." }}
+        <div class="project-section__content markdown-content">
+            {{ description_html or "No description provided." }}
         </div>
     </div>
 

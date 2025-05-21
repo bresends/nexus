@@ -74,8 +74,8 @@
             <span class="material-icons project-section__icon">description</span>
             Description
         </h2>
-        <div class="project-section__content">
-            {{ project.description or "No description provided." }}
+        <div class="project-section__content markdown-content">
+            {{ description_html or "No description provided." }}
         </div>
     </div>
 
@@ -85,8 +85,8 @@
             <span class="material-icons project-section__icon">lightbulb</span>
             Purpose
         </h2>
-        <div class="project-section__content">
-            {{ project.purpose or "No purpose specified." }}
+        <div class="project-section__content markdown-content">
+            {{ purpose_html or "No purpose specified." }}
         </div>
     </div>
 
@@ -96,8 +96,8 @@
             <span class="material-icons project-section__icon">check_circle</span>
             Desired Outcome
         </h2>
-        <div class="project-section__content">
-            {{ project.desired_outcome or "No desired outcome specified." }}
+        <div class="project-section__content markdown-content">
+            {{ desired_outcome_html or "No desired outcome specified." }}
         </div>
     </div>
 

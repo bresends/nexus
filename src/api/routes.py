@@ -4,6 +4,7 @@ from models.project import Project
 from models.task import Task
 from database.database import SessionLocal
 from sqlalchemy import exc, func
+from utils.markdown_helper import md_to_html
 
 projects_bp = Blueprint("projects", __name__)
 
@@ -70,9 +71,20 @@ def project_detail(project_id):
             .order_by(Task.sort_order)
             .all()
         )
+        
+        # Convert markdown to HTML
+        description_html = md_to_html(project.description)
+        purpose_html = md_to_html(project.purpose)
+        desired_outcome_html = md_to_html(project.desired_outcome)
+        
         return render_template(
-            "projects/project_detail.html", project=project, tasks=tasks
-        )  # Pass tasks to template
+            "projects/project_detail.html", 
+            project=project, 
+            tasks=tasks,
+            description_html=description_html,
+            purpose_html=purpose_html,
+            desired_outcome_html=desired_outcome_html
+        )
     finally:
         db.close()
 
@@ -441,10 +453,14 @@ def task_detail(project_id, task_id):
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
         
+        # Convert markdown to HTML
+        description_html = md_to_html(task.description)
+
         return render_template(
             "tasks/task_detail.html",
             task=task,
             project=project,
+            description_html=description_html,
         )
     finally:
         db.close()
