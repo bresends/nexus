@@ -14,6 +14,7 @@ class Task(Base):
     description = Column(Text)
     status = Column(String(50), default="todo")  # e.g., todo, in progress, done
     priority = Column(String(50), default="medium")  # e.g., low, medium, high
+    sort_order = Column(Integer, default=0)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(
         DateTime,

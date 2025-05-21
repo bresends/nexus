@@ -3,7 +3,7 @@ from datetime import datetime
 from models.project import Project
 from models.task import Task
 from database.database import SessionLocal
-from sqlalchemy import exc
+from sqlalchemy import exc, func
 
 projects_bp = Blueprint("projects", __name__)
 
@@ -56,15 +56,20 @@ def create_project():
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>")
+@projects_bp.route("/projects/<int:project_id>")
 def project_detail(project_id):
     db = SessionLocal()
     try:
         project = db.query(Project).filter(Project.id == project_id).first()
         if project is None:
             return "Project not found", 404
-        # Fetch tasks related to the project
-        tasks = db.query(Task).filter(Task.project_id == project_id).all()
+        # Fetch tasks related to the project, ordered by order field
+        tasks = (
+            db.query(Task)
+            .filter(Task.project_id == project_id)
+            .order_by(Task.sort_order)
+            .all()
+        )
         return render_template(
             "projects/project_detail.html", project=project, tasks=tasks
         )  # Pass tasks to template
@@ -72,7 +77,7 @@ def project_detail(project_id):
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/edit", methods=["GET"])
+@projects_bp.route("/projects/<int:project_id>/edit", methods=["GET"])
 def edit_project(project_id):
     db = SessionLocal()
     try:
@@ -84,7 +89,7 @@ def edit_project(project_id):
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/update", methods=["POST"])
+@projects_bp.route("/projects/<int:project_id>/update", methods=["POST"])
 def update_project(project_id):
     db = SessionLocal()
     try:
@@ -119,7 +124,7 @@ def update_project(project_id):
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/delete", methods=["GET"])
+@projects_bp.route("/projects/<int:project_id>/delete", methods=["GET"])
 def delete_project(project_id):
     db = SessionLocal()
     try:
@@ -143,7 +148,7 @@ def delete_project(project_id):
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/delete/confirm", methods=["POST"])
+@projects_bp.route("/projects/<int:project_id>/delete/confirm", methods=["POST"])
 def delete_project_confirm(project_id):
     db = SessionLocal()
     try:
@@ -166,7 +171,7 @@ def delete_project_confirm(project_id):
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/tasks/add", methods=["POST"])
+@projects_bp.route("/projects/<int:project_id>/tasks/add", methods=["POST"])
 def add_task(project_id):
     db = SessionLocal()
     try:
@@ -180,6 +185,15 @@ def add_task(project_id):
         task_priority = request.form.get("priority", "Medium")
         task_due_date_str = request.form.get("due_date")
 
+        # Get the highest order number for this project's tasks
+        max_order = (
+            db.query(func.max(Task.sort_order))
+            .filter(Task.project_id == project_id)
+            .scalar()
+            or -1
+        )
+        next_order = max_order + 1
+
         if not task_name:
             flash("Task name is required.", "warning")
             return redirect(url_for("projects.new_task_page", project_id=project_id))
@@ -189,8 +203,13 @@ def add_task(project_id):
             try:
                 task_due_date = datetime.strptime(task_due_date_str, "%Y-%m-%d")
             except ValueError:
-                flash(f"Invalid due date format for task '{task_name}'. Please use YYYY-MM-DD.", "warning")
-                return redirect(url_for("projects.new_task_page", project_id=project_id))
+                flash(
+                    f"Invalid due date format for task '{task_name}'. Please use YYYY-MM-DD.",
+                    "warning",
+                )
+                return redirect(
+                    url_for("projects.new_task_page", project_id=project_id)
+                )
 
         new_task = Task(
             project_id=project_id,
@@ -198,12 +217,16 @@ def add_task(project_id):
             description=task_description,
             priority=task_priority,
             status="todo",  # Default status
-            due_date=task_due_date
+            due_date=task_due_date,
+            sort_order=next_order,  # Set the order to be last
         )
 
         db.add(new_task)
         db.commit()
-        flash(f"Task '{new_task.name}' added successfully to project '{project.name}'.", "success")
+        flash(
+            f"Task '{new_task.name}' added successfully to project '{project.name}'.",
+            "success",
+        )
     except exc.SQLAlchemyError as e:
         db.rollback()
         flash(f"Error adding task: {str(e)}", "danger")
@@ -212,7 +235,7 @@ def add_task(project_id):
     return redirect(url_for("projects.project_detail", project_id=project_id))
 
 
-@projects_bp.route("/project/<int:project_id>/tasks/new", methods=["GET"])
+@projects_bp.route("/projects/<int:project_id>/tasks/new", methods=["GET"])
 def new_task_page(project_id):
     db = SessionLocal()
     try:
@@ -220,32 +243,52 @@ def new_task_page(project_id):
         if not project:
             flash("Project not found.", "danger")
             return redirect(url_for("projects.list_projects"))
-        return render_template("tasks/create_task.html", project_id=project_id, project_name=project.name)
+        return render_template(
+            "tasks/create_task.html", project_id=project_id, project_name=project.name
+        )
     finally:
         db.close()
 
 
-@projects_bp.route("/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET"])
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/edit", methods=["GET"]
+)
 def edit_task_page(project_id, task_id):
     db = SessionLocal()
     try:
         project = db.query(Project).filter(Project.id == project_id).first()
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not project:
             flash("Project not found.", "danger")
             return redirect(url_for("projects.list_projects"))
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
-        return render_template("tasks/edit_task.html", project_id=project_id, project_name=project.name, task=task)
+        return render_template(
+            "tasks/edit_task.html",
+            project_id=project_id,
+            project_name=project.name,
+            task=task,
+        )
     finally:
         db.close()
 
-@projects_bp.route("/project/<int:project_id>/task/<int:task_id>/update", methods=["POST"])
+
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/update", methods=["POST"]
+)
 def update_task(project_id, task_id):
     db = SessionLocal()
     try:
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
@@ -258,7 +301,11 @@ def update_task(project_id, task_id):
 
         if not task_name:
             flash("Task name is required.", "warning")
-            return redirect(url_for('projects.edit_task_page', project_id=project_id, task_id=task_id))
+            return redirect(
+                url_for(
+                    "projects.edit_task_page", project_id=project_id, task_id=task_id
+                )
+            )
 
         task.name = task_name
         task.description = task_description
@@ -269,8 +316,17 @@ def update_task(project_id, task_id):
             try:
                 task.due_date = datetime.strptime(task_due_date_str, "%Y-%m-%d")
             except ValueError:
-                flash(f"Invalid due date format for task '{task_name}'. Please use YYYY-MM-DD.", "warning")
-                return redirect(url_for('projects.edit_task_page', project_id=project_id, task_id=task_id))
+                flash(
+                    f"Invalid due date format for task '{task_name}'. Please use YYYY-MM-DD.",
+                    "warning",
+                )
+                return redirect(
+                    url_for(
+                        "projects.edit_task_page",
+                        project_id=project_id,
+                        task_id=task_id,
+                    )
+                )
         else:
             task.due_date = None
 
@@ -283,32 +339,51 @@ def update_task(project_id, task_id):
         db.close()
     return redirect(url_for("projects.project_detail", project_id=project_id))
 
-@projects_bp.route("/project/<int:project_id>/task/<int:task_id>/delete", methods=["GET"])
+
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/delete", methods=["GET"]
+)
 def delete_task_page(project_id, task_id):
     db = SessionLocal()
     try:
         project = db.query(Project).filter(Project.id == project_id).first()
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not project:
             flash("Project not found.", "danger")
             return redirect(url_for("projects.list_projects"))
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
-        return render_template("tasks/delete_task.html", project_id=project_id, project_name=project.name, task=task)
+        return render_template(
+            "tasks/delete_task.html",
+            project_id=project_id,
+            project_name=project.name,
+            task=task,
+        )
     finally:
         db.close()
 
-@projects_bp.route("/project/<int:project_id>/task/<int:task_id>/delete/confirm", methods=["POST"])
+
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/delete/confirm", methods=["POST"]
+)
 def delete_task_confirm(project_id, task_id):
     db = SessionLocal()
     try:
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
 
-        task_name = task.name # Save for flash message
+        task_name = task.name  # Save for flash message
         db.delete(task)
         db.commit()
         flash(f"Task '{task_name}' has been permanently deleted.", "success")
@@ -318,3 +393,32 @@ def delete_task_confirm(project_id, task_id):
     finally:
         db.close()
     return redirect(url_for("projects.project_detail", project_id=project_id))
+
+
+@projects_bp.route("/projects/<int:project_id>/tasks/reorder", methods=["POST"])
+def reorder_tasks(project_id):
+    db = SessionLocal()
+    try:
+        data = request.get_json()
+        task_orders = data.get("taskOrders", [])  # List of {taskId: int, order: int}
+
+        # Update each task's order
+        for task_order in task_orders:
+            task_id = task_order.get("taskId")
+            new_order = task_order.get("order")
+            if task_id is not None and new_order is not None:
+                task = (
+                    db.query(Task)
+                    .filter(Task.id == task_id, Task.project_id == project_id)
+                    .first()
+                )
+                if task:
+                    task.sort_order = new_order
+
+        db.commit()
+        return {"status": "success"}, 200
+    except Exception as e:
+        db.rollback()
+        return {"status": "error", "message": str(e)}, 500
+    finally:
+        db.close()

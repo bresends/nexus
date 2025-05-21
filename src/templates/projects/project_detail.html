@@ -112,6 +112,7 @@
                 <table class="table tasks-table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>Status</th>
@@ -120,9 +121,10 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tasksList">
                         {% for task in tasks %}
-                        <tr>
+                        <tr draggable="true" data-task-id="{{ task.id }}" class="task-row">
+                            <td class="drag-handle"><span class="material-icons">drag_indicator</span></td>
                             <td>{{ task.name }}</td>
                             <td>{% if task.description %}{{ task.description }}{% else %}-{% endif %}</td>
                             <td><span class="task-status task-status--{{ task.status | lower | replace(' ', '-') }}">{{ task.status }}</span></td>
