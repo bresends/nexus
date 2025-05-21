@@ -71,19 +71,19 @@ def project_detail(project_id):
             .order_by(Task.sort_order)
             .all()
         )
-        
+
         # Convert markdown to HTML
         description_html = md_to_html(project.description)
         purpose_html = md_to_html(project.purpose)
         desired_outcome_html = md_to_html(project.desired_outcome)
-        
+
         return render_template(
-            "projects/project_detail.html", 
-            project=project, 
+            "projects/project_detail.html",
+            project=project,
             tasks=tasks,
             description_html=description_html,
             purpose_html=purpose_html,
-            desired_outcome_html=desired_outcome_html
+            desired_outcome_html=desired_outcome_html,
         )
     finally:
         db.close()
@@ -456,7 +456,7 @@ def task_detail(project_id, task_id):
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
-        
+
         # Convert markdown to HTML
         description_html = md_to_html(task.description)
         context_html = md_to_html(task.context)

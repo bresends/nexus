@@ -110,10 +110,10 @@
         <div class="project-section__content">
             {% if tasks %}
                 <div class="table-responsive">
-                    <table class="modern-table">
+                    <table class="task-table">
                         <thead>
-                            <tr>
-                                <th></th>
+                            <tr class="task-table__header-row">
+                                <th class="task__number-cell">#</th>
                                 <th>Name</th>
                                 <th>Description</th>
                                 <th>Status</th>
@@ -122,54 +122,61 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tasksList">
+                        <tbody id="tasksList" class="task-table__body">
                             {% for task in tasks %}
-                            <tr draggable="true" data-task-id="{{ task.id }}" class="task-row">
-                                <td class="drag-handle"><span class="material-icons">drag_indicator</span></td>
-                                <td>
-                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task-name-link">
+                            <tr draggable="true" data-task-id="{{ task.id }}" class="task task-table__row">
+                                <td class="task__number-cell task__cell">
+                                    <div class="task__number-wrapper">
+                                        <span class="task__number">{{ task.sort_order + 1 }}</span>
+                                    </div>
+                                    <div class="task__drag-handle">
+                                        <span class="material-icons task__drag-icon">drag_indicator</span>
+                                    </div>
+                                </td>
+                                <td class="task__cell">
+                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task__name-link">
                                         <strong>{{ task.name }}</strong>
                                         {% if task.context %}
-                                        <span class="context-badge">Context</span>
+                                        <span class="task__context-badge">Context</span>
                                         {% endif %}
                                     </a>
                                 </td>
-                                <td>
-                                    <div class="truncate-text">
+                                <td class="task__cell">
+                                    <div class="task__description">
                                         {% if task.description %}{{ task.description }}{% else %}-{% endif %}
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="status-badge status-{{ task.status | lower | replace(' ', '-') }}">
+                                <td class="task__cell">
+                                    <span class="task__status task__status--{{ task.status | lower | replace(' ', '-') }}">
                                         {{ task.status }}
                                     </span>
                                 </td>
-                                <td>
-                                    <div class="priority">
+                                <td class="task__cell">
+                                    <div class="task__priority">
                                         {% set priority_classes = {
-                                            'High': 'priority-high',
-                                            'Medium': 'priority-medium',
-                                            'Low': 'priority-low'
+                                            'High': 'high',
+                                            'Medium': 'medium',
+                                            'Low': 'low'
                                         } %}
-                                        <span class="priority-indicator {{ priority_classes.get(task.priority, 'priority-medium') }}"></span>
+                                        <span class="task__priority-indicator task__priority-indicator--{{ priority_classes.get(task.priority, 'medium') }}"></span>
                                         {{ task.priority }}
                                     </div>
                                 </td>
-                                <td>
+                                <td class="task__cell">
                                     {% if task.due_date %}
-                                    <span class="date-pill">{{ task.due_date.strftime('%Y-%m-%d') }}</span>
+                                    <span class="task__date">{{ task.due_date.strftime('%Y-%m-%d') }}</span>
                                     {% else %}
-                                    <span class="text-muted">-</span>
+                                    <span class="task__date task__date--empty">-</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--view" title="View Task">
+                                <td class="task__cell task__actions-cell">
+                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task__action task__action--view" title="View Task">
                                         <span class="material-icons">visibility</span>
                                     </a>
-                                    <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--edit" title="Edit Task">
+                                    <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="task__action task__action--edit" title="Edit Task">
                                         <span class="material-icons">edit</span>
                                     </a>
-                                    <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--delete" title="Delete Task">
+                                    <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="task__action task__action--delete" title="Delete Task">
                                         <span class="material-icons">delete</span>
                                     </a>
                                 </td>

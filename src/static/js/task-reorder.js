@@ -5,7 +5,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let draggedItem = null;
 
     // Add event listeners for all draggable items
-    document.querySelectorAll('.task-row').forEach(row => {
+    document.querySelectorAll('.task').forEach(row => {
+        // Make only the drag handle initiate the drag
+        const dragHandle = row.querySelector('.task__drag-handle');
+        if (dragHandle) {
+            dragHandle.addEventListener('mousedown', function() {
+                row.setAttribute('draggable', true);
+            });
+
+            row.addEventListener('mouseup', function() {
+                row.removeAttribute('draggable');
+            });
+        }
+
         row.addEventListener('dragstart', handleDragStart);
         row.addEventListener('dragend', handleDragEnd);
         row.addEventListener('dragover', handleDragOver);
@@ -14,11 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleDragStart(e) {
         draggedItem = this;
-        this.classList.add('dragging');
+        this.classList.add('task--dragging');
     }
 
     function handleDragEnd(e) {
-        this.classList.remove('dragging');
+        this.classList.remove('task--dragging');
         draggedItem = null;
     }
 
@@ -42,10 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!draggedItem) return;
 
         // Collect new order of tasks
-        const taskOrders = Array.from(tasksList.querySelectorAll('.task-row')).map((row, index) => ({
+        const taskOrders = Array.from(tasksList.querySelectorAll('.task')).map((row, index) => ({
             taskId: parseInt(row.dataset.taskId),
             order: index
         }));
+
+        // Update task numbers in the UI immediately
+        updateTaskNumbers();
 
         // Send order to server
         fetch(`/projects/${getProjectId()}/tasks/reorder`, {
@@ -71,5 +86,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const path = window.location.pathname;
         const matches = path.match(/\/projects\/(\d+)/);
         return matches ? matches[1] : null;
+    }
+
+    // Helper function to update task numbers after reordering
+    function updateTaskNumbers() {
+        const rows = tasksList.querySelectorAll('.task');
+        rows.forEach((row, index) => {
+            const taskNumberElement = row.querySelector('.task__number');
+            if (taskNumberElement) {
+                taskNumberElement.textContent = `${index + 1}`;
+            }
+        });
     }
 });
