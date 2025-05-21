@@ -109,39 +109,65 @@
         </h2>
         <div class="project-section__content">
             {% if tasks %}
-                <table class="table tasks-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Priority</th>
-                            <th>Due Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tasksList">
-                        {% for task in tasks %}
-                        <tr draggable="true" data-task-id="{{ task.id }}" class="task-row">
-                            <td class="drag-handle"><span class="material-icons">drag_indicator</span></td>
-                            <td>{{ task.name }}</td>
-                            <td>{% if task.description %}{{ task.description }}{% else %}-{% endif %}</td>
-                            <td><span class="task-status task-status--{{ task.status | lower | replace(' ', '-') }}">{{ task.status }}</span></td>
-                            <td><span class="task-priority task-priority--{{ task.priority | lower }}">{{ task.priority }}</span></td>
-                            <td>{{ task.due_date.strftime('%b %d, %Y') if task.due_date else 'N/A' }}</td>
-                            <td>
-                                <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--edit" title="Edit Task">
-                                    <span class="material-icons">edit</span>
-                                </a>
-                                <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--delete" title="Delete Task">
-                                    <span class="material-icons">delete</span>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksList">
+                            {% for task in tasks %}
+                            <tr draggable="true" data-task-id="{{ task.id }}" class="task-row">
+                                <td class="drag-handle"><span class="material-icons">drag_indicator</span></td>
+                                <td><strong>{{ task.name }}</strong></td>
+                                <td>
+                                    <div class="truncate-text">
+                                        {% if task.description %}{{ task.description }}{% else %}-{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ task.status | lower | replace(' ', '-') }}">
+                                        {{ task.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="priority">
+                                        {% set priority_classes = {
+                                            'High': 'priority-high',
+                                            'Medium': 'priority-medium',
+                                            'Low': 'priority-low'
+                                        } %}
+                                        <span class="priority-indicator {{ priority_classes.get(task.priority, 'priority-medium') }}"></span>
+                                        {{ task.priority }}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if task.due_date %}
+                                    <span class="date-pill">{{ task.due_date.strftime('%Y-%m-%d') }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--edit" title="Edit Task">
+                                        <span class="material-icons">edit</span>
+                                    </a>
+                                    <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--delete" title="Delete Task">
+                                        <span class="material-icons">delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <p>No tasks for this project yet. <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}">Add the first task!</a></p>
             {% endif %}
