@@ -29,6 +29,11 @@
                 </span>
             </div>
         </div>
+        <div class="project-header__actions">
+            <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}" class="action-button action-button--primary">
+                <span class="material-icons action-button__icon">add_circle_outline</span> Add New Task
+            </a>
+        </div>
     </div>
 
     <!-- Project Metadata -->
@@ -109,30 +114,44 @@
         </h2>
         <div class="project-section__content">
             {% if tasks %}
-                <ul class="task-list">
-                    {% for task in tasks %}
-                        <li class="task-item">
-                            <div class="task-item__header">
-                                <span class="task-item__name">{{ task.name }}</span>
-                                <span class="task-item__status task-item__status--{{ task.status | lower | replace(' ', '-') }}">{{ task.status }}</span>
-                            </div>
-                            <div class="task-item__body">
-                                <p>{{ task.description or "No description." }}</p>
-                            </div>
-                            <div class="task-item__footer">
-                                <span class="task-item__priority task-item__priority--{{ task.priority | lower }}">Priority: {{ task.priority }}</span>
-                                {% if task.due_date %}
-                                    <span class="task-item__due-date">
-                                        <span class="material-icons">event</span>
-                                        Due: {{ task.due_date.strftime('%b %d, %Y') }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <table class="table tasks-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.name }}</td>
+                            <td><span class="task-status task-status--{{ task.status | lower | replace(' ', '-') }}">{{ task.status }}</span></td>
+                            <td><span class="task-priority task-priority--{{ task.priority | lower }}">{{ task.priority }}</span></td>
+                            <td>{{ task.due_date.strftime('%b %d, %Y') if task.due_date else 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--edit" title="Edit Task">
+                                    <span class="material-icons">edit</span>
+                                </a>
+                                <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button-icon action-button-icon--delete" title="Delete Task">
+                                    <span class="material-icons">delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% if task.description %}
+                        <tr class="task-description-row">
+                            <td colspan="5">
+                                <small>{{ task.description }}</small>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
-                <p>No tasks for this project yet.</p>
+                <p>No tasks for this project yet. <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}">Add the first task!</a></p>
             {% endif %}
         </div>
     </div>

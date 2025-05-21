@@ -1,0 +1,56 @@
+{# filepath: /home/bruno/promptlab/src/templates/tasks/delete_task.html #}
+{% extends "base.html" %}
+
+{% block title %}Delete Task - {{ task.name }}{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1 class="page-title">Delete Task: {{ task.name }}</h1>
+    <p class="page-subtitle">From Project: <a href="{{ url_for('projects.project_detail', project_id=project_id) }}">{{ project_name }}</a></p>
+
+    <div class="alert alert-danger" role="alert">
+        <strong>Warning!</strong> Are you sure you want to permanently delete the task "{{ task.name }}"? This action cannot be undone.
+    </div>
+
+    <div class="task-details-card">
+        <h2 class="task-details-card__title">Task Details</h2>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Name:</span>
+            <span class="task-details-card__value">{{ task.name }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Description:</span>
+            <span class="task-details-card__value">{{ task.description or 'N/A' }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Status:</span>
+            <span class="task-details-card__value">{{ task.status }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Priority:</span>
+            <span class="task-details-card__value">{{ task.priority }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Due Date:</span>
+            <span class="task-details-card__value">{{ task.due_date.strftime('%b %d, %Y') if task.due_date else 'N/A' }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Created:</span>
+            <span class="task-details-card__value">{{ task.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+        </div>
+        <div class="task-details-card__item">
+            <span class="task-details-card__label">Last Updated:</span>
+            <span class="task-details-card__value">{{ task.updated_at.strftime('%b %d, %Y %H:%M') }}</span>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('projects.delete_task_confirm', project_id=project_id, task_id=task.id) }}" class="form-actions form-actions--centered">
+        <button type="submit" class="action-button action-button--delete">
+            <span class="material-icons action-button__icon">delete_forever</span> Confirm Deletion
+        </button>
+        <a href="{{ url_for('projects.project_detail', project_id=project_id) }}" class="action-button action-button--secondary">
+            <span class="material-icons action-button__icon">cancel</span> Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}
