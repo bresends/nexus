@@ -113,6 +113,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Description</th>
                             <th>Status</th>
                             <th>Priority</th>
                             <th>Due Date</th>
@@ -123,6 +124,7 @@
                         {% for task in tasks %}
                         <tr>
                             <td>{{ task.name }}</td>
+                            <td>{% if task.description %}{{ task.description }}{% else %}-{% endif %}</td>
                             <td><span class="task-status task-status--{{ task.status | lower | replace(' ', '-') }}">{{ task.status }}</span></td>
                             <td><span class="task-priority task-priority--{{ task.priority | lower }}">{{ task.priority }}</span></td>
                             <td>{{ task.due_date.strftime('%b %d, %Y') if task.due_date else 'N/A' }}</td>
@@ -135,13 +137,6 @@
                                 </a>
                             </td>
                         </tr>
-                        {% if task.description %}
-                        <tr class="task-description-row">
-                            <td colspan="5">
-                                <small>{{ task.description }}</small>
-                            </td>
-                        </tr>
-                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
