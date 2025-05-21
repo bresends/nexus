@@ -12,6 +12,7 @@ class Task(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text)
+    context = Column(Text)
     status = Column(String(50), default="todo")  # e.g., todo, in progress, done
     priority = Column(String(50), default="medium")  # e.g., low, medium, high
     sort_order = Column(Integer, default=0)

@@ -129,6 +129,9 @@
                                 <td>
                                     <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task-name-link">
                                         <strong>{{ task.name }}</strong>
+                                        {% if task.context %}
+                                        <span class="context-badge">Context</span>
+                                        {% endif %}
                                     </a>
                                 </td>
                                 <td>

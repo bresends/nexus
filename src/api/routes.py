@@ -194,6 +194,7 @@ def add_task(project_id):
 
         task_name = request.form.get("name")
         task_description = request.form.get("description")
+        task_context = request.form.get("context")
         task_priority = request.form.get("priority", "Medium")
         task_due_date_str = request.form.get("due_date")
 
@@ -227,6 +228,7 @@ def add_task(project_id):
             project_id=project_id,
             name=task_name,
             description=task_description,
+            context=task_context,
             priority=task_priority,
             status="todo",  # Default status
             due_date=task_due_date,
@@ -307,6 +309,7 @@ def update_task(project_id, task_id):
 
         task_name = request.form.get("name")
         task_description = request.form.get("description")
+        task_context = request.form.get("context")
         task_status = request.form.get("status")
         task_priority = request.form.get("priority")
         task_due_date_str = request.form.get("due_date")
@@ -321,6 +324,7 @@ def update_task(project_id, task_id):
 
         task.name = task_name
         task.description = task_description
+        task.context = task_context
         task.status = task_status
         task.priority = task_priority
 
@@ -455,12 +459,14 @@ def task_detail(project_id, task_id):
         
         # Convert markdown to HTML
         description_html = md_to_html(task.description)
+        context_html = md_to_html(task.context)
 
         return render_template(
             "tasks/task_detail.html",
             task=task,
             project=project,
             description_html=description_html,
+            context_html=context_html,
         )
     finally:
         db.close()

@@ -20,6 +20,11 @@
         </div>
 
         <div class="form-group">
+            <label for="context" class="form-label">Context <small class="text-muted">(Data to complete the task)</small></label>
+            <textarea id="context" name="context" class="form-control" rows="3">{{ task.context }}</textarea>
+        </div>
+
+        <div class="form-group">
             <label for="status" class="form-label">Status</label>
             <select id="status" name="status" class="form-control">
                 <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>To Do</option>
