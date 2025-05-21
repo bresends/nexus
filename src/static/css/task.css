@@ -1,0 +1,699 @@
+/* Task table - BEM methodology */
+
+/* Table block */
+.task-table {
+  /* Remove default spacing that might cause issues */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* Table element - table body */
+.task-table__body {
+  position: relative;
+}
+
+/* Task block - table cells */
+.task__cell {
+  padding: 10px 16px;
+  vertical-align: middle;
+  position: relative;
+}
+
+/* Task element - number cell */
+.task__number-cell {
+  position: relative;
+  width: 60px;
+  text-align: center;
+}
+
+/* Task modifier - hover state */
+.task:hover {
+  background-color: rgba(248, 249, 253, 0.5);
+}
+
+/* Task modifier - hover affecting task number */
+.task:hover .task__number {
+  color: var(--text-dark);
+}
+
+/* Task number element transitions */
+.task__number {
+  transition: color 0.2s ease;
+}
+
+/* Task modifier - dragging state */
+.task--dragging {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Global table rows transition */
+.task-table__row {
+  transition: background-color 0.2s ease;
+}
+
+/* Task block */
+.task {
+    cursor: move;
+    position: relative;
+}
+
+/* Task modifier for dragging state */
+.task--dragging {
+    opacity: 0.5;
+    background-color: #f5f5f5;
+}
+
+/* Task element for drag handle (Notion-style) */
+.task__drag-handle {
+    color: #ccc;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 24px;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.task:hover .task__drag-handle {
+    opacity: 1;
+}
+
+.task__drag-handle:hover {
+    color: #666;
+    background-color: #f0f0f0;
+}
+
+/* Task element for number cell */
+.task__number-cell {
+    position: relative;
+    width: 50px;
+}
+
+/* Task element for number wrapper */
+.task__number-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* Task element for number display */
+.task__number {
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+/* Task element for drag icon */
+.task__drag-icon {
+    font-size: 16px;
+}
+
+/* Additional task-table BEM styles */
+
+/* Table block */
+.task-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Table header */
+.task-table__header-row th {
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+/* Table rows */
+.task-table__row {
+  transition: background-color 0.2s ease;
+}
+
+/* Table cells */
+.task__cell {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+/* Last row has no bottom border */
+.task-table__body tr:last-child .task__cell {
+  border-bottom: none;
+}
+
+/* Actions cell */
+.task__actions-cell {
+  white-space: nowrap;
+}
+
+/* Make sure the task hover state is consistent */
+.task:hover {
+  background-color: rgba(248, 249, 253, 0.8);
+}
+
+/* Custom styles for PromptLab - Modern UI inspired by Notion and Clickup */
+:root {
+  --primary-color: #635FC7;
+  --secondary-color: #FFOOD4;
+  --accent-color: #FF9F76;
+  --light-bg: #F8F9FD;
+  --white: #FFFFFF;
+  --text-dark: #2E2E3A;
+  --text-muted: #828FA3;
+  --border-color: #E4EBFA;
+  --success: #4ECB71;
+  --warning: #FFA500;
+  --danger: #EA5555;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(71, 41, 41, 0.08);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --header-height: 64px;
+  --gradient-primary: linear-gradient(135deg, #635FC7, #8780fa);
+  --gradient-accent: linear-gradient(135deg, #FF9F76, #FFOOD4);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* Modern card-based container */
+.content-container {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.3s ease;
+}
+
+.content-container:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+/* Modern table styling */
+.modern-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+}
+
+.modern-table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.modern-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.modern-table tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table tr:hover {
+  background-color: rgba(248, 249, 253, 0.8);
+}
+
+/* Task status badges - BEM */
+.task__status {
+  padding: 0.25rem 0.75rem;
+  border-radius: .5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  min-width: 6rem;
+}
+
+.task__status--planning {
+  background-color: rgba(99, 95, 199, 0.15);
+  color: var(--primary-color);
+}
+
+.task__status--in-progress {
+  background-color: rgba(255, 165, 0, 0.15);
+  color: var(--warning);
+}
+
+.task__status--completed {
+  background-color: rgba(78, 203, 113, 0.15);
+  color: var(--success);
+}
+
+.task__status--on-hold {
+  background-color: rgba(234, 85, 85, 0.15);
+  color: var(--danger);
+}
+
+/* Task priority indicators - BEM */
+.task__priority {
+  display: flex;
+  align-items: center;
+}
+
+.task__priority-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.task__priority-indicator--high {
+  background-color: var(--danger);
+}
+
+.task__priority-indicator--medium {
+  background-color: var(--warning);
+}
+
+.task__priority-indicator--low {
+  background-color: var(--success);
+}
+
+/* Project name styling */
+.project-name {
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+}
+
+.project-name:hover {
+  color: var(--primary-color);
+}
+
+/* Task date styling - BEM */
+.task__date {
+  background-color: var(--light-bg);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+}
+
+.task__date--empty {
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .content-container {
+    padding: 1.5rem;
+  }
+
+  .modern-table th,
+  .modern-table td {
+    padding: 0.75rem;
+  }
+}
+
+/* Navbar styles */
+.app-navbar {
+  background-color: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand-custom {
+  color: var(--primary-color);
+}
+
+.navbar-brand-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Button styles */
+.btn-add {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: var(--radius-sm);
+}
+
+.btn-icon {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.btn-rounded {
+  border-radius: var(--radius-sm);
+}
+
+/* Search input styles */
+.search-input-group .input-group-text {
+  background-color: var(--white);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  border-right: 0;
+}
+
+.search-input-group .form-control {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-left: 0;
+  box-shadow: none;
+}
+
+.search-icon {
+  font-size: 1rem;
+}
+
+/* Filter styles */
+.filter-select {
+  max-width: 140px;
+  border-radius: var(--radius-sm);
+}
+
+/* Card styles */
+.stat-card {
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card-primary {
+  background: linear-gradient(to right, rgba(99, 95, 199, 0.05), rgba(99, 95, 199, 0.1));
+}
+
+.stat-card-warning {
+  background: linear-gradient(to right, rgba(255, 165, 0, 0.05), rgba(255, 165, 0, 0.1));
+}
+
+.stat-card-success {
+  background: linear-gradient(to right, rgba(78, 203, 113, 0.05), rgba(78, 203, 113, 0.1));
+}
+
+.stat-card-danger {
+  background: linear-gradient(to right, rgba(234, 85, 85, 0.05), rgba(234, 85, 85, 0.1));
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card-value {
+  font-weight: 700;
+}
+
+.stat-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-primary {
+  background-color: rgba(99, 95, 199, 0.15);
+}
+
+.stat-icon-warning {
+  background-color: rgba(255, 165, 0, 0.15);
+}
+
+.stat-icon-success {
+  background-color: rgba(78, 203, 113, 0.15);
+}
+
+.stat-icon-danger {
+  background-color: rgba(234, 85, 85, 0.15);
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-warning {
+  color: var(--warning) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+/* Task description - BEM */
+.task__description {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Task name link styling - BEM */
+.task__name-link {
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.task__name-link:hover {
+  color: var(--primary-color);
+}
+
+.task__name-link:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.task__name-link:hover:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Task action button styling */
+.task__action {
+  color: var(--text-muted);
+  margin: 0 2px;
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.task__action--view {
+  color: var(--primary-color);
+}
+
+.task__action--view:hover {
+  color: var(--primary-color);
+  background-color: rgba(99, 95, 199, 0.1);
+}
+
+.task__action--edit:hover {
+  color: var(--warning);
+  background-color: rgba(255, 165, 0, 0.1);
+}
+
+.task__action--delete:hover {
+  color: var(--danger);
+  background-color: rgba(234, 85, 85, 0.1);
+}
+
+/* Markdown content styling */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.markdown-content h1 {
+  font-size: 1.8em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+  font-size: 1.6em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.2em;
+}
+
+.markdown-content h3 {
+  font-size: 1.4em;
+}
+
+.markdown-content h4 {
+  font-size: 1.2em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-content a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content pre,
+.markdown-content code {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+.markdown-content pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  margin-bottom: 1em;
+  border: 1px solid var(--border-color);
+}
+
+.markdown-content code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background-color: transparent;
+}
+
+.markdown-content blockquote {
+  padding: 0 1em;
+  color: var(--text-muted);
+  border-left: 0.25em solid var(--border-color);
+  margin-bottom: 1em;
+}
+
+.markdown-content table {
+  width: 100%;
+  margin-bottom: 1em;
+  border-collapse: collapse;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  padding: 6px 13px;
+  border: 1px solid var(--border-color);
+}
+
+.markdown-content table th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Context section styling */
+.project-section__icon--context {
+  color: var(--accent-color);
+}
+
+.context-preview {
+  background-color: #f8f9fa;
+  border-left: 3px solid var(--accent-color);
+  padding: 8px 12px;
+  font-style: italic;
+  color: var(--text-muted);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-top: 8px;
+}
+
+.task__context-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  background-color: rgba(255, 159, 118, 0.15);
+  color: #e67e22;
+  border-radius: 4px;
+  margin-left: 6px;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+
