@@ -7,28 +7,26 @@
     <!-- Project Header Section -->
     <div class="project-header">
         <div>
-            <h1 class="project-title">{{ project.name }}</h1>
-            <div class="d-flex align-items-center mt-2">
-                {% set status_classes = {
-                    'Planning': 'status-planning',
-                    'In Progress': 'status-in-progress',
-                    'Completed': 'status-completed',
-                    'On Hold': 'status-on-hold'
+            <h1 class="project-header__title">{{ project.name }}</h1>
+            <div class="project-header__meta">
+                {% set status_modifiers = {
+                    'Planning': 'planning',
+                    'In Progress': 'in-progress',
+                    'Completed': 'completed',
+                    'On Hold': 'on-hold'
                 } %}
-                <span class="status-badge {{ status_classes.get(project.status, 'status-planning') }}">
+                <span class="project-status project-status--{{ status_modifiers.get(project.status, 'planning') }}">
                     {{ project.status }}
                 </span>
 
-                <div class="ms-3">
-                    {% set priority_classes = {
-                        'High': 'priority-high',
-                        'Medium': 'priority-medium',
-                        'Low': 'priority-low'
-                    } %}
-                    <span class="priority-indicator {{ priority_classes.get(project.priority, 'priority-medium') }}">
-                        {{ project.priority }} Priority
-                    </span>
-                </div>
+                {% set priority_modifiers = {
+                    'High': 'high',
+                    'Medium': 'medium',
+                    'Low': 'low'
+                } %}
+                <span class="project-priority project-priority--{{ priority_modifiers.get(project.priority, 'medium') }}">
+                    {{ project.priority }} Priority
+                </span>
             </div>
         </div>
     </div>
@@ -36,21 +34,21 @@
     <!-- Project Metadata -->
     <div class="project-meta">
         <div class="meta-card">
-            <div class="meta-label">Created</div>
-            <div class="meta-content">
+            <div class="meta-card__label">Created</div>
+            <div class="meta-card__content">
                 <span class="date-pill">
-                    <span class="material-icons">calendar_today</span>
+                    <span class="material-icons date-pill__icon">calendar_today</span>
                     {{ project.created_at.strftime('%b %d, %Y') }}
                 </span>
             </div>
         </div>
 
         <div class="meta-card">
-            <div class="meta-label">Deadline</div>
-            <div class="meta-content">
+            <div class="meta-card__label">Deadline</div>
+            <div class="meta-card__content">
                 {% if project.deadline %}
                     <span class="date-pill">
-                        <span class="material-icons">event</span>
+                        <span class="material-icons date-pill__icon">event</span>
                         {{ project.deadline.strftime('%b %d, %Y') }}
                     </span>
                 {% else %}
@@ -60,10 +58,10 @@
         </div>
 
         <div class="meta-card">
-            <div class="meta-label">Updated</div>
-            <div class="meta-content">
+            <div class="meta-card__label">Updated</div>
+            <div class="meta-card__content">
                 <span class="date-pill">
-                    <span class="material-icons">update</span>
+                    <span class="material-icons date-pill__icon">update</span>
                     {{ project.updated_at.strftime('%b %d, %Y') }}
                 </span>
             </div>
@@ -71,48 +69,48 @@
     </div>
 
     <!-- Project Description Section -->
-    <div class="project-description-card">
-        <h2 class="section-title">
-            <span class="material-icons">description</span>
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">description</span>
             Description
         </h2>
-        <div class="section-content">
+        <div class="project-section__content">
             {{ project.description or "No description provided." }}
         </div>
     </div>
 
     <!-- Project Purpose Section -->
-    <div class="project-description-card">
-        <h2 class="section-title">
-            <span class="material-icons">lightbulb</span>
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">lightbulb</span>
             Purpose
         </h2>
-        <div class="section-content">
+        <div class="project-section__content">
             {{ project.purpose or "No purpose specified." }}
         </div>
     </div>
 
     <!-- Desired Outcome Section -->
-    <div class="project-description-card">
-        <h2 class="section-title">
-            <span class="material-icons">check_circle</span>
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">check_circle</span>
             Desired Outcome
         </h2>
-        <div class="section-content">
+        <div class="project-section__content">
             {{ project.desired_outcome or "No desired outcome specified." }}
         </div>
     </div>
 
     <!-- Action Buttons -->
-    <div class="d-flex mt-4">
-        <a href="{{ url_for('projects.list_projects') }}" class="action-button btn-back">
-            <span class="material-icons">arrow_back</span> Back to Projects
+    <div class="project-actions">
+        <a href="{{ url_for('projects.list_projects') }}" class="action-button action-button--back">
+            <span class="material-icons action-button__icon">arrow_back</span> Back to Projects
         </a>
-        <button class="action-button btn-edit">
-            <span class="material-icons">edit</span> Edit Project
+        <button class="action-button action-button--edit">
+            <span class="material-icons action-button__icon">edit</span> Edit Project
         </button>
-        <button class="action-button btn-delete">
-            <span class="material-icons">delete</span> Delete
+        <button class="action-button action-button--delete">
+            <span class="material-icons action-button__icon">delete</span> Delete
         </button>
     </div>
 </div>
