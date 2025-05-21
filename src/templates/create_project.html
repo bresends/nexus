@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Project{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Create New Project</h1>
+    </div>
+
+    <form method="POST" action="{{ url_for('projects.create_project') }}">
+        <div class="project-form">
+            <!-- Project Name -->
+            <div class="form-group mb-4">
+                <label for="name" class="form-label">Project Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div class="row mb-4">
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="Planning" selected>Planning</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="On Hold">On Hold</option>
+                    </select>
+                </div>
+                
+                <!-- Priority -->
+                <div class="col-md-6">
+                    <label for="priority" class="form-label">Priority</label>
+                    <select class="form-select" id="priority" name="priority">
+                        <option value="High">High</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Deadline -->
+            <div class="form-group mb-4">
+                <label for="deadline" class="form-label">Deadline</label>
+                <input type="date" class="form-control" id="deadline" name="deadline">
+            </div>
+            
+            <!-- Description -->
+            <div class="form-group mb-4">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+            </div>
+            
+            <!-- Purpose -->
+            <div class="form-group mb-4">
+                <label for="purpose" class="form-label">Purpose</label>
+                <textarea class="form-control" id="purpose" name="purpose" rows="4"></textarea>
+            </div>
+            
+            <!-- Desired Outcome -->
+            <div class="form-group mb-4">
+                <label for="desired_outcome" class="form-label">Desired Outcome</label>
+                <textarea class="form-control" id="desired_outcome" name="desired_outcome" rows="4"></textarea>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('projects.list_projects') }}" class="action-button action-button--back">
+                    <span class="material-icons action-button__icon">arrow_back</span> Cancel
+                </a>
+                <button type="submit" class="action-button action-button--edit">
+                    <span class="material-icons action-button__icon">save</span> Create Project
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

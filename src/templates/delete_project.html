@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Project{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Delete Project</h1>
+    </div>
+
+    <div class="delete-confirmation">
+        <div class="alert alert-danger mb-4">
+            <div class="d-flex align-items-center">
+                <span class="material-icons me-3" style="font-size: 2rem;">warning</span>
+                <div>
+                    <h4 class="alert-heading">Are you sure?</h4>
+                    <p class="mb-0">You are about to delete the project <strong>"{{ project.name }}"</strong>. This action cannot be undone.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-section mb-4">
+            <h3 class="project-section__title">Project Details</h3>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Name:</span>
+                    <strong>{{ project.name }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Status:</span>
+                    <span class="project-status project-status--{{ status_modifiers.get(project.status, 'planning') }}">
+                        {{ project.status }}
+                    </span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Created:</span>
+                    <span>{{ project.created_at.strftime('%b %d, %Y') }}</span>
+                </li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{{ url_for('projects.delete_project_confirm', project_id=project.id) }}">
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="action-button action-button--back">
+                    <span class="material-icons action-button__icon">arrow_back</span> Cancel
+                </a>
+                <button type="submit" class="action-button action-button--delete">
+                    <span class="material-icons action-button__icon">delete_forever</span> Permanently Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForm = document.querySelector('form');
+        const deleteButton = document.querySelector('.action-button--delete');
+
+        deleteButton.addEventListener('click', function(e) {
+            if (!confirm('Are you absolutely sure you want to delete this project? This action CANNOT be undone.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -70,10 +70,10 @@
 <div class="content-container">
     <div class="page-header">
         <h1 class="page-title">Projects</h1>
-        <button class="btn btn-primary btn-add">
+        <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary btn-add">
             <span class="material-icons btn-icon">add</span>
             New Project
-        </button>
+        </a>
     </div>
 
     <div class="filter-bar mb-4">

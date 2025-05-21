@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Edit Project</h1>
+    </div>
+
+    <form method="POST" action="{{ url_for('projects.update_project', project_id=project.id) }}">
+        <div class="project-form">
+            <!-- Project Name -->
+            <div class="form-group mb-4">
+                <label for="name" class="form-label">Project Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ project.name }}" required>
+            </div>
+
+            <div class="row mb-4">
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="Planning" {% if project.status == 'Planning' %}selected{% endif %}>Planning</option>
+                        <option value="In Progress" {% if project.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                        <option value="Completed" {% if project.status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="On Hold" {% if project.status == 'On Hold' %}selected{% endif %}>On Hold</option>
+                    </select>
+                </div>
+
+                <!-- Priority -->
+                <div class="col-md-6">
+                    <label for="priority" class="form-label">Priority</label>
+                    <select class="form-select" id="priority" name="priority">
+                        <option value="High" {% if project.priority == 'High' %}selected{% endif %}>High</option>
+                        <option value="Medium" {% if project.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="Low" {% if project.priority == 'Low' %}selected{% endif %}>Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Deadline -->
+            <div class="form-group mb-4">
+                <label for="deadline" class="form-label">Deadline</label>
+                <input type="date" class="form-control" id="deadline" name="deadline"
+                       value="{{ project.deadline.strftime('%Y-%m-%d') if project.deadline else '' }}">
+            </div>
+
+            <!-- Description -->
+            <div class="form-group mb-4">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4">{{ project.description or '' }}</textarea>
+            </div>
+
+            <!-- Purpose -->
+            <div class="form-group mb-4">
+                <label for="purpose" class="form-label">Purpose</label>
+                <textarea class="form-control" id="purpose" name="purpose" rows="4">{{ project.purpose or '' }}</textarea>
+            </div>
+
+            <!-- Desired Outcome -->
+            <div class="form-group mb-4">
+                <label for="desired_outcome" class="form-label">Desired Outcome</label>
+                <textarea class="form-control" id="desired_outcome" name="desired_outcome" rows="4">{{ project.desired_outcome or '' }}</textarea>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="action-button action-button--back">
+                    <span class="material-icons action-button__icon">arrow_back</span> Cancel
+                </a>
+                <button type="submit" class="action-button action-button--edit">
+                    <span class="material-icons action-button__icon">save</span> Save Changes
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
