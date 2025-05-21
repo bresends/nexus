@@ -22,4 +22,4 @@ EXPOSE 5000
 
 WORKDIR /app/src
 # Run with gunicorn
-CMD ["uv", "run", "gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
+CMD ["uv", "run", "gunicorn", "app:app",  "--workers", "2", "--bind", "0.0.0.0:5000"]
