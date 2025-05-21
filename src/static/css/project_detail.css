@@ -142,7 +142,6 @@
   border: 1px solid rgba(228, 235, 250, 0.6);
   display: flex;
   align-items: center;
-  gap: 1rem;
   flex-basis: calc(33.333% - 0.75rem);
   flex-grow: 1;
   max-width: 400px;
@@ -174,8 +173,8 @@
 .date-pill {
   background: linear-gradient(135deg, rgba(99, 95, 199, 0.1), rgba(99, 95, 199, 0.2));
   color: var(--primary-color);
-  padding: 0.5rem 0.85rem;
-  border-radius: 2rem;
+  padding: 0.25rem 0.85rem;
+  border-radius: .5rem;
   font-size: 0.875rem;
   font-weight: 600;
   display: inline-flex;
@@ -188,7 +187,6 @@
 }
 
 .date-pill__icon {
-  font-size: 1rem;
   margin-right: 0.25rem;
 }
 
