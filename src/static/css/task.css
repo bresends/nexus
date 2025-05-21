@@ -23,8 +23,9 @@
 /* Task element - number cell */
 .task__number-cell {
   position: relative;
-  width: 60px;
+  width: 50px;
   text-align: center;
+  padding-left: 24px; /* More space for the drag handle */
 }
 
 /* Task modifier - hover state */
@@ -56,40 +57,41 @@
 .task {
     cursor: move;
     position: relative;
+    /* Add left padding to make room for the drag handle */
+    padding-left: 10px;
 }
 
 /* Task modifier for dragging state */
 .task--dragging {
-    opacity: 0.5;
-    background-color: #f5f5f5;
+    opacity: 0.7;
+    background-color: #f0f5ff;
+    box-shadow: 0 0 10px rgba(99, 95, 199, 0.15);
+    border: 1px dashed var(--primary-color);
 }
 
 /* Task element for drag handle (Notion-style) */
 .task__drag-handle {
-    color: #ccc;
+    color: #aaa;
     cursor: move;
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
-    left: -8px;
+    left: -16px;
     top: 50%;
     transform: translateY(-50%);
-    width: 16px;
+    width: 24px;
     height: 24px;
-    opacity: 0;
-    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    opacity: 1; /* Always visible */
+    transition: color 0.2s ease, background-color 0.2s ease;
     border-radius: 3px;
     z-index: 10;
 }
 
-.task:hover .task__drag-handle {
-    opacity: 1;
-}
-
-.task__drag-handle:hover {
-    color: #666;
-    background-color: #f0f0f0;
+.task__drag-handle:active {
+    cursor: grabbing;
+    color: #444;
+    background-color: #e8e8e8;
 }
 
 /* Task element for number cell */
@@ -113,10 +115,11 @@
 
 /* Task element for drag icon */
 .task__drag-icon {
-    font-size: 16px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-/* Additional task-table BEM styles */
 
 /* Table block */
 .task-table {
@@ -124,6 +127,8 @@
   border-spacing: 0;
   width: 100%;
   margin-bottom: 1rem;
+  padding-left: 15px;
+  position: relative;
 }
 
 /* Table header */
@@ -166,98 +171,6 @@
   background-color: rgba(248, 249, 253, 0.8);
 }
 
-/* Custom styles for PromptLab - Modern UI inspired by Notion and Clickup */
-:root {
-  --primary-color: #635FC7;
-  --secondary-color: #FFOOD4;
-  --accent-color: #FF9F76;
-  --light-bg: #F8F9FD;
-  --white: #FFFFFF;
-  --text-dark: #2E2E3A;
-  --text-muted: #828FA3;
-  --border-color: #E4EBFA;
-  --success: #4ECB71;
-  --warning: #FFA500;
-  --danger: #EA5555;
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(71, 41, 41, 0.08);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --header-height: 64px;
-  --gradient-primary: linear-gradient(135deg, #635FC7, #8780fa);
-  --gradient-accent: linear-gradient(135deg, #FF9F76, #FFOOD4);
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: var(--light-bg);
-  color: var(--text-dark);
-  line-height: 1.5;
-}
-
-/* Modern card-based container */
-.content-container {
-  background-color: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
-  border: 1px solid var(--border-color);
-  transition: box-shadow 0.3s ease;
-}
-
-.content-container:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.page-title {
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: var(--text-dark);
-  margin: 0;
-}
-
-/* Modern table styling */
-.modern-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 1rem;
-}
-
-.modern-table th {
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  text-align: left;
-}
-
-.modern-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.875rem;
-  vertical-align: middle;
-}
-
-.modern-table tr:last-child td {
-  border-bottom: none;
-}
-
-.modern-table tr:hover {
-  background-color: rgba(248, 249, 253, 0.8);
-}
 
 /* Task status badges - BEM */
 .task__status {
@@ -313,174 +226,6 @@ body {
 
 .task__priority-indicator--low {
   background-color: var(--success);
-}
-
-/* Project name styling */
-.project-name {
-  font-weight: 600;
-  color: var(--text-dark);
-  text-decoration: none;
-}
-
-.project-name:hover {
-  color: var(--primary-color);
-}
-
-/* Task date styling - BEM */
-.task__date {
-  background-color: var(--light-bg);
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-}
-
-.task__date--empty {
-  background-color: transparent;
-  color: var(--text-muted);
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-  .content-container {
-    padding: 1.5rem;
-  }
-
-  .modern-table th,
-  .modern-table td {
-    padding: 0.75rem;
-  }
-}
-
-/* Navbar styles */
-.app-navbar {
-  background-color: var(--white);
-  box-shadow: var(--shadow-sm);
-}
-
-.navbar-brand-custom {
-  color: var(--primary-color);
-}
-
-.navbar-brand-icon {
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-/* Button styles */
-.btn-add {
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: var(--radius-sm);
-}
-
-.btn-icon {
-  font-size: 1rem;
-  vertical-align: middle;
-}
-
-.btn-rounded {
-  border-radius: var(--radius-sm);
-}
-
-/* Search input styles */
-.search-input-group .input-group-text {
-  background-color: var(--white);
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-  border-right: 0;
-}
-
-.search-input-group .form-control {
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  border-left: 0;
-  box-shadow: none;
-}
-
-.search-icon {
-  font-size: 1rem;
-}
-
-/* Filter styles */
-.filter-select {
-  max-width: 140px;
-  border-radius: var(--radius-sm);
-}
-
-/* Card styles */
-.stat-card {
-  border: 0;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-card-primary {
-  background: linear-gradient(to right, rgba(99, 95, 199, 0.05), rgba(99, 95, 199, 0.1));
-}
-
-.stat-card-warning {
-  background: linear-gradient(to right, rgba(255, 165, 0, 0.05), rgba(255, 165, 0, 0.1));
-}
-
-.stat-card-success {
-  background: linear-gradient(to right, rgba(78, 203, 113, 0.05), rgba(78, 203, 113, 0.1));
-}
-
-.stat-card-danger {
-  background: linear-gradient(to right, rgba(234, 85, 85, 0.05), rgba(234, 85, 85, 0.1));
-}
-
-.stat-card-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-card-value {
-  font-weight: 700;
-}
-
-.stat-icon-container {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-icon-primary {
-  background-color: rgba(99, 95, 199, 0.15);
-}
-
-.stat-icon-warning {
-  background-color: rgba(255, 165, 0, 0.15);
-}
-
-.stat-icon-success {
-  background-color: rgba(78, 203, 113, 0.15);
-}
-
-.stat-icon-danger {
-  background-color: rgba(234, 85, 85, 0.15);
-}
-
-.stat-icon {
-  font-size: 24px;
-}
-
-.text-primary {
-  color: var(--primary-color) !important;
-}
-
-.text-warning {
-  color: var(--warning) !important;
-}
-
-.text-success {
-  color: var(--success) !important;
-}
-
-.text-danger {
-  color: var(--danger) !important;
 }
 
 /* Task description - BEM */
