@@ -23,7 +23,3 @@ class Project(Base):
         onupdate=func.now(),
     )
     tasks = relationship("Task", back_populates="project")
-
-    def to_dict(self):
-        # Return all column fields dynamically
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
