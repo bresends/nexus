@@ -17,6 +17,11 @@ class GithubOpenAISettings(LLMProviderSettings):
     default_model: str = "openai/gpt-4.1-mini"
     base_url: str = "https://models.github.ai/inference"
 
+class DeepSeekSettings(LLMProviderSettings):
+    api_key: str = os.getenv("DEEPSEEK_API_KEY")
+    default_model: str = "deepseek-chat"
+    base_url: str = "https://api.deepseek.com"
+
 
 class OpenAISettings(LLMProviderSettings):
     api_key: str = os.getenv("OPENAI_API_KEY")
@@ -41,6 +46,7 @@ class Settings(BaseSettings):
     anthropic: AnthropicSettings = AnthropicSettings()
     llama: LlamaSettings = LlamaSettings()
     github_models: GithubOpenAISettings = GithubOpenAISettings()
+    deepseek: DeepSeekSettings = DeepSeekSettings()
 
 @lru_cache
 def get_settings():

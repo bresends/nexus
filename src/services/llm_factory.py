@@ -30,6 +30,12 @@ class LLMFactory:
             "anthropic": lambda s: instructor.from_anthropic(
                 Anthropic(api_key=s.api_key)
             ),
+            "deepseek": lambda s: instructor.from_openai(
+                OpenAI(
+                    api_key=s.api_key,
+                    base_url=s.base_url,
+                )
+            ),
             "llama": lambda s: instructor.from_openai(
                 OpenAI(base_url=s.base_url, api_key=s.api_key),
                 mode=instructor.Mode.JSON,
