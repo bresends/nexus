@@ -5,6 +5,7 @@ from prompts.prompt_manager import PromptManager
 from database.database import SessionLocal
 from models.project import Project
 from sqlalchemy.orm import joinedload
+from models.task import Task
 
 
 class NewProjectInfoRelevance(str, Enum):
@@ -35,16 +36,16 @@ class NewInfoClassification(BaseModel):
 class NewProjectInfoEvaluatorPipeline:
     """Pipeline for evaluating the relevance of new information to existing projects."""
 
-    def __init__(self, llm_provider: str = "github_models"):
+    def __init__(self, llm_provider: str = "deepseek"):
         self.llm = LLMFactory(llm_provider)
 
     def get_project(self, project_id: int):
-        """Fetch a single project and its tasks from the database by ID."""
+        """Fetch a single project and its tasks (with resources) from the database by ID."""
         db = SessionLocal()
         try:
             project = (
                 db.query(Project)
-                .options(joinedload(Project.tasks))
+                .options(joinedload(Project.tasks).joinedload(Task.resources))
                 .filter(Project.id == project_id)
                 .first()
             )
