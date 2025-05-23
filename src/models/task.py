@@ -25,7 +25,4 @@ class Task(Base):
     due_date = Column(DateTime, nullable=True)
 
     project = relationship("Project", back_populates="tasks")
-
-    def to_dict(self):
-        # Return all column fields dynamically
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    resources = relationship("Resource", back_populates="task")

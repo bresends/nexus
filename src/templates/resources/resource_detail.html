@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Resource{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1>Edit Resource</h1>
+    <form method="post" action="{{ url_for('projects.update_resource', resource_id=resource.id) }}">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ resource.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="url">URL</label>
+            <input type="url" class="form-control" id="url" name="url" value="{{ resource.url }}" required>
+        </div>
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select class="form-control" id="type" name="type" required>
+                <option value="video" {% if resource.type=='video' %}selected{% endif %}>Video</option>
+                <option value="article" {% if resource.type=='article' %}selected{% endif %}>Article</option>
+                <option value="paper" {% if resource.type=='paper' %}selected{% endif %}>Paper</option>
+                <option value="other" {% if resource.type=='other' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3">{{ resource.notes }}</textarea>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="is_consumed" name="is_consumed" value="1" {% if
+                resource.is_consumed %}checked{% endif %}>
+            <label class="form-check-label" for="is_consumed">Consumed</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('projects.task_detail', project_id=resource.task.project_id, task_id=resource.task.id) }}"
+            class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

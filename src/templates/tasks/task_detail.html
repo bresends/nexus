@@ -14,11 +14,12 @@
                 </span>
 
                 {% set priority_classes = {
-                    'High': 'priority-high',
-                    'Medium': 'priority-medium',
-                    'Low': 'priority-low'
+                'High': 'priority-high',
+                'Medium': 'priority-medium',
+                'Low': 'priority-low'
                 } %}
-                <span class="project-priority project-priority--{{ priority_classes.get(task.priority, 'priority-medium') }}">
+                <span
+                    class="project-priority project-priority--{{ priority_classes.get(task.priority, 'priority-medium') }}">
                     {{ task.priority }} Priority
                 </span>
             </div>
@@ -51,12 +52,12 @@
             <div class="meta-card__label">Due Date</div>
             <div class="meta-card__content">
                 {% if task.due_date %}
-                    <span class="date-pill">
-                        <span class="material-icons date-pill__icon">event</span>
-                        {{ task.due_date.strftime('%b %d, %Y') }}
-                    </span>
+                <span class="date-pill">
+                    <span class="material-icons date-pill__icon">event</span>
+                    {{ task.due_date.strftime('%b %d, %Y') }}
+                </span>
                 {% else %}
-                    <span class="text-muted">No due date set</span>
+                <span class="text-muted">No due date set</span>
                 {% endif %}
             </div>
         </div>
@@ -105,15 +106,98 @@
         </div>
     </div>
 
+    <!-- Resources Section -->
+    <div class="project-section">
+        <h2 class="project-section__title">
+            <span class="material-icons project-section__icon">link</span>
+            Resources
+        </h2>
+        <div class="project-section__content">
+            <div class="project-header__actions" style="margin-bottom: 1em;">
+                <a href="{{ url_for('projects.new_resource_page', project_id=project.id, task_id=task.id) }}"
+                    class="btn btn-primary btn-add">
+                    <span class="material-icons btn-icon">add</span>
+                    New Resource
+                </a>
+            </div>
+            {% if task.resources and task.resources|length > 0 %}
+            <div class="table-responsive">
+                <table class="task-table">
+                    <thead>
+                        <tr class="task-table__header-row">
+                            <th class="task__number-cell">#</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Consumed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource in task.resources %}
+                        <tr class="task-table__row">
+                            <td class="task__number-cell task__cell">{{ loop.index }}</td>
+                            <td class="task__cell">
+                                <a href="{{ resource.url }}" target="_blank" class="meta-link">
+                                    <strong>{{ resource.title }}</strong>
+                                </a>
+                            </td>
+                            <td class="task__cell">
+                                {% set type_classes = {
+                                'video': 'badge-video',
+                                'article': 'badge-article',
+                                'paper': 'badge-paper',
+                                'other': 'badge-other'
+                                } %}
+                                <span class="resource-type-badge {{ type_classes.get(resource.type, 'badge-other') }}">
+                                    {{ resource.type|capitalize }}
+                                </span>
+                            </td>
+                            <td class="task__cell">
+                                {% if resource.is_consumed %}
+                                <span class="status-badge status-done">Yes</span>
+                                {% else %}
+                                <span class="status-badge status-todo">No</span>
+                                {% endif %}
+                            </td>
+                            <td class="task__cell task__actions-cell">
+                                <a href="{{ url_for('projects.resource_detail', resource_id=resource.id) }}"
+                                    class="task__action task__action--edit" title="Edit Resource">
+                                    <span class="material-icons">edit</span>
+                                </a>
+                                <form method="post"
+                                    action="{{ url_for('projects.delete_resource', resource_id=resource.id) }}"
+                                    style="display:inline;">
+                                    <button type="submit" class="task__action task__action--delete"
+                                        title="Delete Resource"
+                                        onclick="return confirm('Are you sure you want to delete this resource?');"
+                                        style="background:none; border:none; padding:0; margin-left:6px; color:#EA5555; cursor:pointer;">
+                                        <span class="material-icons">delete</span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <span class="text-muted">No resources linked to this task.</span>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Action Buttons -->
     <div class="project-actions">
-        <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="action-button action-button--back">
+        <a href="{{ url_for('projects.project_detail', project_id=project.id) }}"
+            class="action-button action-button--back">
             <span class="material-icons action-button__icon">arrow_back</span> Back to Project
         </a>
-        <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="action-button action-button--edit">
+        <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}"
+            class="action-button action-button--edit">
             <span class="material-icons action-button__icon">edit</span> Edit Task
         </a>
-        <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="action-button action-button--delete">
+        <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}"
+            class="action-button action-button--delete">
             <span class="material-icons action-button__icon">delete</span> Delete
         </a>
     </div>

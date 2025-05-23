@@ -5,6 +5,7 @@ from models.task import Task
 from database.database import SessionLocal
 from sqlalchemy import exc, func
 from utils.markdown_helper import md_to_html
+from models.resource import Resource
 
 projects_bp = Blueprint("projects", __name__)
 
@@ -468,5 +469,112 @@ def task_detail(project_id, task_id):
             description_html=description_html,
             context_html=context_html,
         )
+    finally:
+        db.close()
+
+
+@projects_bp.route("/resources/<int:resource_id>", methods=["GET"])
+def resource_detail(resource_id):
+    db = SessionLocal()
+    try:
+        resource = db.query(Resource).filter(Resource.id == resource_id).first()
+        if not resource:
+            flash("Resource not found.", "danger")
+            return redirect(url_for("projects.list_projects"))
+        return render_template("resources/resource_detail.html", resource=resource)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/resources/<int:resource_id>/update", methods=["POST"])
+def update_resource(resource_id):
+    db = SessionLocal()
+    try:
+        resource = db.query(Resource).filter(Resource.id == resource_id).first()
+        if not resource:
+            flash("Resource not found.", "danger")
+            return redirect(url_for("projects.list_projects"))
+        resource.title = request.form.get("title")
+        resource.url = request.form.get("url")
+        resource.type = request.form.get("type")
+        resource.notes = request.form.get("notes")
+        resource.is_consumed = bool(request.form.get("is_consumed"))
+        db.commit()
+        flash("Resource updated successfully.", "success")
+        return redirect(url_for("projects.task_detail", project_id=resource.task.project_id, task_id=resource.task.id))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error updating resource: {str(e)}", "danger")
+        return redirect(url_for("projects.resource_detail", resource_id=resource_id))
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>/resources/new", methods=["GET"])
+def new_resource_page(project_id, task_id):
+    db = SessionLocal()
+    try:
+        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        if not task:
+            flash("Task not found.", "danger")
+            return redirect(url_for("projects.project_detail", project_id=project_id))
+        return render_template("resources/create_resource.html", task=task, project_id=project_id)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>/resources/create", methods=["POST"])
+def create_resource(project_id, task_id):
+    db = SessionLocal()
+    try:
+        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        if not task:
+            flash("Task not found.", "danger")
+            return redirect(url_for("projects.project_detail", project_id=project_id))
+        title = request.form.get("title")
+        url_ = request.form.get("url")
+        type_ = request.form.get("type")
+        notes = request.form.get("notes")
+        if not title or not url_ or not type_:
+            flash("Title, URL, and Type are required.", "warning")
+            return redirect(url_for("projects.new_resource_page", project_id=project_id, task_id=task_id))
+        new_resource = Resource(
+            title=title,
+            url=url_,
+            type=type_,
+            notes=notes,
+            is_consumed=False,
+            task_id=task_id
+        )
+        db.add(new_resource)
+        db.commit()
+        flash("Resource added successfully.", "success")
+        return redirect(url_for("projects.task_detail", project_id=project_id, task_id=task_id))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error adding resource: {str(e)}", "danger")
+        return redirect(url_for("projects.new_resource_page", project_id=project_id, task_id=task_id))
+    finally:
+        db.close()
+
+
+@projects_bp.route("/resources/<int:resource_id>/delete", methods=["POST"])
+def delete_resource(resource_id):
+    db = SessionLocal()
+    try:
+        resource = db.query(Resource).filter(Resource.id == resource_id).first()
+        if not resource:
+            flash("Resource not found.", "danger")
+            return redirect(url_for("projects.list_projects"))
+        project_id = resource.task.project_id
+        task_id = resource.task.id
+        db.delete(resource)
+        db.commit()
+        flash("Resource deleted successfully.", "success")
+        return redirect(url_for("projects.task_detail", project_id=project_id, task_id=task_id))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error deleting resource: {str(e)}", "danger")
+        return redirect(url_for("projects.resource_detail", resource_id=resource_id))
     finally:
         db.close()
