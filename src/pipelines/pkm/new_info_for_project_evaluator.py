@@ -18,16 +18,25 @@ class NewProjectInfoAction(str, Enum):
     ADD_TO_PROJECT = "add_to_project"
     EXCLUDE = "exclude"
 
+class Novelty(str, Enum):
+    new = "new"
+    redundant = "redundant"
+    partially_redundant = "partially_redundant"
+
 
 class NewInfoClassification(BaseModel):
     reasoning: str = Field(description="Explain your reasoning for the response.")
     relevance: NewProjectInfoRelevance
-    confidence: float = Field(
-        ge=0.0,
-        le=1.0,
-        description="Your confidence score for the relevance classification between 0 and 1.",
+    related_resources: list[str] = Field(
+        description="List the related resources from the project tasks that are related to the new information."
     )
-    confidence_explanation: str = Field(description="Explain your confidence score.")
+    novelty_reasoning: str = Field(
+        description="Explain your reasoning for the novelty classification."
+    )
+    novelty: Novelty = Field(
+        description="Is the new information novel, redundant, or partially redundant agains the user project current task resources?"
+    )
+    action_reasoning: str = Field(description="Explain how you came to the conclusion.")
     action: NewProjectInfoAction = Field(
         description="What action should be taken with the new information?"
     )
