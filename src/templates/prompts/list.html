@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Prompt Templates{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Prompt Templates</h1>
+        <div class="text-muted">
+            <span class="material-icons">psychology</span> AI-Powered Prompts
+        </div>
+    </div>
+
+    {% if templates %}
+    <div class="row">
+        {% for template in templates %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <span class="material-icons text-primary">description</span>
+                        {{ template.name|title }}
+                    </h5>
+                    <p class="card-text flex-grow-1">{{ template.description }}</p>
+
+                    <div class="mt-auto">
+                        <small class="text-muted d-block">
+                            <span class="material-icons">person</span> {{ template.author }}
+                        </small>
+                        {% if template.variables %}
+                        <small class="text-muted d-block mb-2">
+                            <span class="material-icons">local_offer</span> Variables: {{ template.variables|join(', ') }}
+                        </small>
+                        {% endif %}
+
+                        <a href="{{ url_for('prompts.prompt_detail', template_name=template.name) }}"
+                           class="btn btn-primary btn-sm w-100">
+                            <span class="material-icons">play_arrow</span> Use Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <span class="material-icons" style="font-size: 4rem; color: #6c757d;">search</span>
+        <h3 class="text-muted mt-3">No Templates Found</h3>
+        <p class="text-muted">Create some .j2 template files in the prompts/templates directory.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

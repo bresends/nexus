@@ -4,10 +4,14 @@ from models.project import Project
 from models.task import Task
 from database.database import SessionLocal
 from sqlalchemy import exc, func
+from sqlalchemy.orm import joinedload
 from utils.markdown_helper import md_to_html
 from models.resource import Resource
+from pathlib import Path
+from prompts.prompt_manager import PromptManager
 
 projects_bp = Blueprint("projects", __name__)
+prompts_bp = Blueprint("prompts", __name__)
 
 
 @projects_bp.route("/projects")
@@ -578,3 +582,105 @@ def delete_resource(resource_id):
         return redirect(url_for("projects.resource_detail", resource_id=resource_id))
     finally:
         db.close()
+
+
+# ========================================
+# PROMPTS BLUEPRINT
+# ========================================
+
+@prompts_bp.route("/prompts")
+def list_prompts():
+    """List all available prompt templates"""
+    try:
+        templates_dir = Path(__file__).parent.parent / "prompts" / "templates"
+        
+        if not templates_dir.exists():
+            flash("Templates directory not found", "warning")
+            return render_template("prompts/list.html", templates=[])
+        
+        # Get all template files
+        template_files = [f.stem for f in templates_dir.glob("*.j2")]
+        
+        # Get template info for each
+        templates_info = []
+        for template_name in template_files:
+            try:
+                info = PromptManager.get_template_info(template_name)
+                templates_info.append(info)
+            except Exception as e:
+                print(f"Error loading template {template_name}: {e}")
+        
+        return render_template("prompts/list.html", templates=templates_info)
+    except Exception as e:
+        flash(f"Error loading templates: {str(e)}", "danger")
+        return render_template("prompts/list.html", templates=[])
+
+
+@prompts_bp.route("/prompts/<template_name>")
+def prompt_detail(template_name):
+    """Show prompt template with form to fill variables"""
+    try:
+        template_info = PromptManager.get_template_info(template_name)
+        
+        # If template needs project data, get projects for dropdown
+        projects = []
+        if 'project' in template_info['variables']:
+            db = SessionLocal()
+            try:
+                projects = db.query(Project).all()
+            finally:
+                db.close()
+        
+        return render_template(
+            "prompts/detail.html", 
+            template=template_info,
+            projects=projects
+        )
+    except Exception as e:
+        flash(f"Error loading template: {str(e)}", "danger")
+        return redirect(url_for("prompts.list_prompts"))
+
+
+@prompts_bp.route("/prompts/<template_name>/render", methods=["POST"])
+def render_prompt(template_name):
+    """Render prompt with provided data"""
+    try:
+        # Get form data
+        template_data = {}
+        
+        # Handle project selection
+        if 'project_id' in request.form:
+            project_id = request.form.get('project_id')
+            if project_id:
+                db = SessionLocal()
+                try:
+                    project = (
+                        db.query(Project)
+                        .options(joinedload(Project.tasks).joinedload(Task.resources))
+                        .filter(Project.id == project_id)
+                        .first()
+                    )
+                    template_data['project'] = project
+                finally:
+                    db.close()
+        
+        # Handle other variables
+        for key, value in request.form.items():
+            if key != 'project_id' and value.strip():
+                template_data[key] = value
+        
+        # Render the prompt
+        rendered_prompt = PromptManager.get_prompt(template_name, **template_data)
+        template_info = PromptManager.get_template_info(template_name)
+        
+        return render_template(
+            "prompts/rendered.html",
+            template_name=template_name,
+            rendered_prompt=rendered_prompt,
+            template_info=template_info,
+            template_data=template_data
+        )
+        
+    except Exception as e:
+        flash(f"Error rendering prompt: {str(e)}", "danger")
+        return redirect(url_for("prompts.prompt_detail", template_name=template_name))
