@@ -25,11 +25,7 @@ messages:
     content: |
       Please analyze and compare the following two YouTube video summaries:
 
-      Video 1 Summary:
-      {{video1_summary}}
-
-      Video 2 Summary:
-      {{video2_summary}}
+      {{input}}
 
       Provide:
       1. A detailed analysis of similarities and differences
