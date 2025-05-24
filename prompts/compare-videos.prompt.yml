@@ -37,11 +37,13 @@ messages:
       3. Your reasoning for the classification
       4. A recommendation on whether the user should watch both videos or just one
 testData:
-  - video1_summary: |
+  - input: |
+      Video 1 Summary:
       This video explains the basics of Python programming, covering variables, data types, and basic control structures like loops and conditionals. The instructor uses simple examples to demonstrate each concept.
-    video2_summary: |
+
+      Video 2 Summary:
       An introduction to Python fundamentals including variable assignment, different data types (strings, integers, lists), and control flow with if statements and for loops. Examples are provided throughout.
-    expected: |
+    expected: >
       Analysis: Both videos cover Python programming fundamentals with significant overlap in topics (variables, data types, control structures).
       Confidence Score: 85
       Reasoning: Very similar content coverage with minor differences in presentation style.
