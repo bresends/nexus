@@ -1,10 +1,7 @@
 from typing import Optional
 from pydantic_settings import BaseSettings
+from pydantic import Field
 from functools import lru_cache
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 
 class LLMProviderSettings(BaseSettings):
@@ -12,26 +9,28 @@ class LLMProviderSettings(BaseSettings):
     max_tokens: Optional[int] = None
     max_retries: int = 3
 
+
 class GithubOpenAISettings(LLMProviderSettings):
-    api_key: str = os.getenv("GITHUB_MODELS_API_KEY")
+    api_key: str = Field(validation_alias="GITHUB_MODELS_API_KEY")
     default_model: str = "openai/gpt-4.1-mini"
     base_url: str = "https://models.github.ai/inference"
 
+
 class DeepSeekSettings(LLMProviderSettings):
-    api_key: str = os.getenv("DEEPSEEK_API_KEY")
+    api_key: str = Field(validation_alias="DEEPSEEK_API_KEY")
     default_model: str = "deepseek-chat"
     base_url: str = "https://api.deepseek.com"
 
 
 class OpenAISettings(LLMProviderSettings):
-    api_key: str = os.getenv("OPENAI_API_KEY")
+    api_key: str = Field(validation_alias="OPENAI_API_KEY")
     default_model: str = "gpt-4o"
 
 
 class AnthropicSettings(LLMProviderSettings):
-    api_key: str = os.getenv("ANTHROPIC_API_KEY")
+    api_key: str = Field(validation_alias="ANTHROPIC_API_KEY")
     default_model: str = "claude-3-5-sonnet-20240620"
-    max_tokens: int = 1024
+    max_tokens: Optional[int] = 1024
 
 
 class LlamaSettings(LLMProviderSettings):
@@ -41,13 +40,13 @@ class LlamaSettings(LLMProviderSettings):
 
 
 class Settings(BaseSettings):
-    app_name: str = "GenAI Project Template"
-    openai: OpenAISettings = OpenAISettings()
-    anthropic: AnthropicSettings = AnthropicSettings()
-    llama: LlamaSettings = LlamaSettings()
-    github_models: GithubOpenAISettings = GithubOpenAISettings()
-    deepseek: DeepSeekSettings = DeepSeekSettings()
+    openai: OpenAISettings = Field(default_factory=OpenAISettings)
+    anthropic: AnthropicSettings = Field(default_factory=AnthropicSettings)
+    llama: LlamaSettings = Field(default_factory=LlamaSettings)
+    github_models: GithubOpenAISettings = Field(default_factory=GithubOpenAISettings)
+    deepseek: DeepSeekSettings = Field(default_factory=DeepSeekSettings)
+
 
 @lru_cache
-def get_settings():
+def get_settings() -> Settings:
     return Settings()

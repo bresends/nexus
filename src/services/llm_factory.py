@@ -1,43 +1,46 @@
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Literal, Type
 
 import instructor
+import tiktoken
 from anthropic import Anthropic
-from config.settings import get_settings
 from openai import OpenAI
 from pydantic import BaseModel
-import tiktoken
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 from rich.syntax import Syntax
+from rich.table import Table
+
+from config.llm_settings import get_settings
+
+type LLMProviders = Literal["openai", "anthropic", "deepseek", "github_models", "llama"]
 
 
 class LLMFactory:
-    def __init__(self, provider: str):
-        self.provider = provider
+    def __init__(self, provider: LLMProviders) -> None:
+        self.provider: LLMProviders = provider
         self.settings = getattr(get_settings(), provider)
         self.client = self._initialize_client()
 
     def _initialize_client(self) -> Any:
         client_initializers = {
-            "openai": lambda s: instructor.from_openai(OpenAI(api_key=s.api_key)),
-            "github_models": lambda s: instructor.from_openai(
+            "openai": lambda settings: instructor.from_openai(OpenAI(api_key=settings.api_key)),
+            "github_models": lambda settings: instructor.from_openai(
                 OpenAI(
-                    api_key=s.api_key,
-                    base_url=s.base_url,
+                    api_key=settings.api_key,
+                    base_url=settings.base_url,
                 )
             ),
-            "anthropic": lambda s: instructor.from_anthropic(
-                Anthropic(api_key=s.api_key)
+            "anthropic": lambda settings: instructor.from_anthropic(
+                Anthropic(api_key=settings.api_key)
             ),
-            "deepseek": lambda s: instructor.from_openai(
+            "deepseek": lambda settings: instructor.from_openai(
                 OpenAI(
-                    api_key=s.api_key,
-                    base_url=s.base_url,
+                    api_key=settings.api_key,
+                    base_url=settings.base_url,
                 )
             ),
-            "llama": lambda s: instructor.from_openai(
-                OpenAI(base_url=s.base_url, api_key=s.api_key),
+            "llama": lambda settings: instructor.from_openai(
+                OpenAI(base_url=settings.base_url, api_key=settings.api_key),
                 mode=instructor.Mode.JSON,
             ),
         }
@@ -46,6 +49,22 @@ class LLMFactory:
         if initializer:
             return initializer(self.settings)
         raise ValueError(f"Unsupported LLM provider: {self.provider}")
+
+    def create_completion(
+        self, response_model: Type[BaseModel], messages: List[Dict[str, str]], **kwargs
+    ) -> Any:
+        # Log token count before making the LLM call
+        self._log_token_count(messages)
+        model = kwargs.get("model", self.settings.default_model)
+        completion_params = {
+            "model": model,
+            "temperature": kwargs.get("temperature", self.settings.temperature),
+            "max_retries": kwargs.get("max_retries", self.settings.max_retries),
+            "max_tokens": kwargs.get("max_tokens", self.settings.max_tokens),
+            "response_model": response_model,
+            "messages": messages,
+        }
+        return self.client.chat.completions.create(**completion_params)
 
     def _log_token_count(self, messages: List[Dict[str, str]]):
         console = Console()
@@ -90,19 +109,3 @@ class LLMFactory:
                 )
             )
             return None
-
-    def create_completion(
-        self, response_model: Type[BaseModel], messages: List[Dict[str, str]], **kwargs
-    ) -> Any:
-        # Log token count before making the LLM call
-        self._log_token_count(messages)
-        model = kwargs.get("model", self.settings.default_model)
-        completion_params = {
-            "model": model,
-            "temperature": kwargs.get("temperature", self.settings.temperature),
-            "max_retries": kwargs.get("max_retries", self.settings.max_retries),
-            "max_tokens": kwargs.get("max_tokens", self.settings.max_tokens),
-            "response_model": response_model,
-            "messages": messages,
-        }
-        return self.client.chat.completions.create(**completion_params)
