@@ -1,10 +1,16 @@
 from typing import Optional
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from functools import lru_cache
+import pathlib
+
+root_dir = pathlib.Path(__file__).resolve().parent.parent.parent
+
+env_file_path = root_dir / ".env"
 
 
 class LLMProviderSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=env_file_path, env_file_encoding="utf-8", extra="ignore")
     temperature: float = 0.0
     max_tokens: Optional[int] = None
     max_retries: int = 3
@@ -40,6 +46,7 @@ class LlamaSettings(LLMProviderSettings):
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=env_file_path, env_file_encoding="utf-8", extra="ignore")
     openai: OpenAISettings = Field(default_factory=OpenAISettings)
     anthropic: AnthropicSettings = Field(default_factory=AnthropicSettings)
     llama: LlamaSettings = Field(default_factory=LlamaSettings)

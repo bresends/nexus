@@ -3,14 +3,15 @@ from typing import Any, Dict, List, Literal, Type
 import instructor
 import tiktoken
 from anthropic import Anthropic
-from openai import OpenAI
+from langfuse.openai import OpenAI
+from langfuse.decorators import observe
 from pydantic import BaseModel
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 
-from config.llm_settings import get_settings
+from ..config.llm_settings import get_settings
 
 type LLMProviders = Literal["openai", "anthropic", "deepseek", "github_models", "llama"]
 
@@ -23,7 +24,9 @@ class LLMFactory:
 
     def _initialize_client(self) -> Any:
         client_initializers = {
-            "openai": lambda settings: instructor.from_openai(OpenAI(api_key=settings.api_key)),
+            "openai": lambda settings: instructor.from_openai(
+                OpenAI(api_key=settings.api_key)
+            ),
             "github_models": lambda settings: instructor.from_openai(
                 OpenAI(
                     api_key=settings.api_key,
@@ -50,6 +53,7 @@ class LLMFactory:
             return initializer(self.settings)
         raise ValueError(f"Unsupported LLM provider: {self.provider}")
 
+    @observe()
     def create_completion(
         self, response_model: Type[BaseModel], messages: List[Dict[str, str]], **kwargs
     ) -> Any:
@@ -69,7 +73,6 @@ class LLMFactory:
     def _log_token_count(self, messages: List[Dict[str, str]]):
         console = Console()
         try:
-
             enc = tiktoken.encoding_for_model("gpt-4-1106-preview")
             tokens_per_message = 3
             num_tokens = 0
