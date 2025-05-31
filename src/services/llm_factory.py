@@ -3,15 +3,18 @@ from typing import Any, Dict, List, Literal, Type
 import instructor
 import tiktoken
 from anthropic import Anthropic
-from langfuse.openai import OpenAI
+from dotenv import load_dotenv
 from langfuse.decorators import observe
+from langfuse.openai import OpenAI
 from pydantic import BaseModel
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
-
 from ..config.llm_settings import get_settings
+
+
+load_dotenv()  # take environment variables
 
 type LLMProviders = Literal["openai", "anthropic", "deepseek", "github_models", "llama"]
 
