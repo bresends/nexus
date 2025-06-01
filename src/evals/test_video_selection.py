@@ -169,13 +169,13 @@ if __name__ == "__main__":
     load_video_summaries_to_dataset()
 
     run_experiment(
-        experiment_name=f"verify_video_summaries_{timestamp}",
+        experiment_name=f"verify_production_{timestamp}",
         label="production",
     )
-    # run_experiment(
-    #     experiment_name=f"verify_new_version_{timestamp}",
-    #     label="latest",
-    # )
+    run_experiment(
+        experiment_name=f"verify_new_version_{timestamp}",
+        label="latest",
+    )
     # run_experiment(
     #     experiment_name="asking_specifically",
     #     label="The user will input countries, respond with only the name of the capital",

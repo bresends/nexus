@@ -278,84 +278,92 @@ o	Mentions the ""AI Pro Expert"" course for more in-depth learning on building A
   ""first_video_author"": ""James Brigs"",
   ""second_video_author"": ""Cole Medin""
 }"
-I know all about chat completions but nothing about the new responses API,"•	Introduction to Responses API (0:00:00): Overview of OpenAI's new Responses API, its purpose, and the topics to be covered (new API, chat functionality, function calls, structured output, web/file search, reasoning).
-•	Key Points & Compatibility (0:01:36): Discussion on the Responses API as the new standard for Chat Completions, its compatibility, and the migration timeline (Chat Completions will continue to be supported, Assistants API deprecated by 2026).
-•	Main Resources/Features (0:03:17): Highlights the advantages like a simplified interface, native support for tools, a new role for developers, better support for reasoning models, integrated file/web search, and simplified chat conversation management.
-•	Native Tools Available (0:04:20): Lists the built-in tools: Web Search, File Search, Computer Use (Operator), and Function Calling.
-•	Migration Guidance (0:05:31): Advice on when to migrate: new applications should start with Responses API; existing applications can plan migration, especially if using Assistants API.
-•	Implementation Considerations (0:06:26): While the API structure changes, the fundamental AI engineering principles remain the same. Some functionalities previously requiring multiple calls can now be done in a single call.
-•	Practical Demonstrations (using n8n):
-o	Basic Chat & Input Parameter (0:08:03): Shows the v1/responses endpoint and the new input parameter (string or array of messages) replacing the old messages array.
-o	Instructions Parameter (0:10:44): Demonstrates how to use the instructions parameter to guide the model's behavior (e.g., ""speak like a pirate"").
-o	Role Hierarchy (0:11:30): Explains the message role hierarchy (System > Developer > User > Assistant) and tests it.
-o	Chat History (0:12:19): How to manage conversation history using the store: true parameter and previous_response_id.
-o	Function Calling (0:14:50): How function calling is implemented with the new API, including the tools parameter. 
-o	Structured Output (0:16:46): How to get structured JSON output using the format: { ""type"": ""json_schema"", ""json_schema"": { ... } } parameter.
-o	Built-in Tools - Web Search (0:17:50): Demonstrates using the web_search_preview tool type.
-o	Built-in Tools - File Search (0:19:19): Shows how to use the file_search tool type with OpenAI's Vector Stores.
-o	Reasoning (0:22:21): Using the reasoning object and effort parameter (low, medium, high) to control the model's reflective process.
-","Key Topics Covered:
-•	Introduction & Context (0:00):
-o	The Responses API is a new offering from OpenAI, positioned as a superset of the Chat Completions API.
-o	The Chat Completions API is planned to be sunset by the end of 2026, making the Responses API the future-proof choice for new applications.
-•	Core Concepts & Migration (1:47):
-o	Backward Compatibility (2:00): Responses API can do everything Chat Completions API can, plus additional features.
-o	Migration Timeline (2:27): Developers have until the end of 2026 to migrate existing applications.
-o	Key New Features (3:06): Simplified interface, native web/file search, new ""developer"" role, improved reasoning support, and simplified conversation state management.
-o	Available Tools (4:00): Web search, file search, (computer use - not covered in detail), and function calling.
-•	Code Examples & Feature Deep Dive (using ai-cookbook GitHub repo):
-o	Basic Text Prompting & Comparison (7:12):
-?	Chat Completions: client.chat.completions.create with messages list.
-???????????
-?	Responses API: client.responses.create with a simpler input parameter for single text or multimodal inputs (e.g., text and image URL).
-o	Text Prompting with Instructions & Developer Role (10:05):
-?	New instructions parameter for system-level/developer guidance.
-?	New developer role in messages, which is overridden by system instructions (chain of command).
-o	Conversation States (14:25):
-?	Manual state management (passing full history in input).
-?	Dynamic state management by passing previous_response_id (OpenAI stores the conversation, can be disabled with store=False).
-o	Function Calling (17:20):
-?	Similar to Chat Completions, using the tools parameter to define functions.
-o	Structured Output (18:05):
-?	Using JSON Schema directly via the text parameter with format: {type: 'json_schema', ...}.
-?	Using Pydantic models (preferred for simplicity) by defining a Pydantic class and setting text_format=YourPydanticClass.
-o	Web Search (20:46):
-?	Using the web_search_preview tool.
-?	Can specify user_location for localized results.
-?	Access to source URLs via annotations.
-o	File Search (RAG - Retrieval Augmented Generation) (22:12):
-?	Upload files to OpenAI storage (client.files.create).
-?	Create a vector store (client.vector_stores.create).
-?	Add files to the vector store (client.vector_stores.files.create).
-?	Use the file_search tool, specifying vector_store_ids.
-?	Can limit max_num_results and include search results in the output.
-o	Reasoning (27:18):
-?	Using specific reasoning models (e.g., o3-mini).
-?	Control reasoning ""effort"" (low, medium, high) via the reasoning parameter, affecting cost and latency.
-•	New Agent SDK (6:26, 28:05): Briefly mentioned as a replacement for Swarm, but detailed coverage is deferred to a future video.
-•	Developer Considerations (28:05): While the API simplifies some aspects, it also introduces abstractions that can make debugging harder (e.g., managed file storage and vector stores). Maintaining control over the RAG pipeline might be preferable for complex applications.
-•	Freelancing & Community (13:58): A brief mention of the speaker's community for freelance AI/data professionals.
-•	GenAI Launchpad (28:58): Introduction to the speaker's company's production-ready boilerplate for AI applications.","{
-  ""detailed_analysis"": ""Both videos provide comprehensive overviews of OpenAI's new Responses API, focusing on its features, migration from Chat Completions, and practical implementation. They both cover the API's advantages (simplified interface, native tool support, improved reasoning, new developer role), migration timelines, and compatibility. Each video demonstrates practical usage, including function calling, structured output, web/file search, and reasoning controls. However, the first video uses n8n for demonstrations, while the second uses the ai-cookbook GitHub repo and Pydantic models. The second video uniquely discusses the new Agent SDK, developer considerations regarding abstraction and debugging, and community/freelancing resources. The first video provides a more granular walkthrough of the Responses API's parameters and role hierarchy, while the second video delves deeper into file search (RAG), vector stores, and offers more context on production deployment and developer workflow."",
-  ""confidence_score"": 0.85,
-  ""reasoning"": ""The two videos are highly similar in their core content: both introduce the Responses API, compare it to Chat Completions, discuss migration, and demonstrate key features (function calling, structured output, web/file search, reasoning). The overlap in technical content and migration advice is substantial. The main differences are in the demonstration tools (n8n vs. ai-cookbook), the second video's additional coverage of the Agent SDK, developer abstraction concerns, and community resources, and the first video's more detailed parameter walkthrough. These differences add value but do not fundamentally change the core learning outcomes for someone seeking to understand the Responses API and its migration from Chat Completions."",
-  ""first_video_unique_points"": [
-    ""Demonstrations using n8n workflow automation tool."",
-    ""Detailed walkthrough of message role hierarchy (System > Developer > User > Assistant)."",
-    ""Step-by-step demonstration of new input and instructions parameters."",
-    ""Granular explanation of conversation history management (store: true, previous_response_id).""
-  ],
-  ""second_video_unique_points"": [
-    ""Demonstrations using ai-cookbook GitHub repo and Pydantic models."",
-    ""Deeper dive into file search (RAG), vector stores, and OpenAI storage."",
-    ""Mention of the new Agent SDK as a replacement for Swarm."",
-    ""Discussion of developer considerations regarding abstraction and debugging."",
-    ""References to freelancing/community resources and GenAI Launchpad boilerplate.""
-  ],
-  ""recommendation"": ""If your primary goal is to understand the Responses API, its migration from Chat Completions, and practical implementation, watching either video will suffice, as both cover the essential technical content. However, if you are interested in workflow automation (n8n) or want a granular parameter walkthrough, the first video is preferable. If you are interested in production deployment, file search (RAG), vector stores, or developer workflow considerations, the second video offers more depth. Watching both is only recommended if you want exposure to both demonstration environments and the additional developer/community context."",
-  ""selected_video"": ""second_video""
-}",second_video,"{
+I know the basics of how MCP servers work but never built one,"Okay, here's a semantic summary of the YouTube video ""Build Python LLM Apps with Model Context Protocol (MCP) — Full Crash Course"":
+
+This video provides a comprehensive crash course for Python developers on understanding and implementing the Model Context Protocol (MCP). It covers:
+
+Introduction and Context (1:12): What MCP is, its purpose (standardizing LLM connections to external data/tools), its origin (Anthropic), and its advantages over traditional fragmented integrations.
+
+Understanding MCP at a Technical Level (3:50, 8:00): The core client-host-server architecture of MCP, including MCP Hosts, Clients, Servers, and the two main transport mechanisms: Stdio (for local) and SSE (Server-Sent Events via HTTP for remote).
+
+Simple Server Setup with Python SDK (17:02): How to create a basic MCP server using FastMCP and define tools with the @mcp.tool() decorator. This includes running the server locally and testing with the MCP Inspector (21:40).
+
+Client-Side Integration (25:55): Demonstrates connecting a Python client to an MCP server using both Stdio (local, same machine) and SSE (remote, via HTTP URL at 31:05) transport mechanisms to list and call server-defined tools.
+
+OpenAI Integration (35:45): Shows how to build a Python client that connects to an MCP server, retrieves its tools, converts them into the OpenAI function calling format, and then uses them in an OpenAI API call to process a query.
+
+MCP vs. Function Calling (49:36): Explains that MCP doesn't add new capabilities but standardizes the way tools are exposed, making them interoperable across different LLMs/applications, unlike traditional function calling which is often model-specific.
+
+Running MCP Server with Docker (51:00): How to package and run an MCP server within a Docker container for easier deployment and management.
+
+Lifecycle Management (54:13): Introduces the Lifespan object for more advanced scenarios, such as managing resource initialization (e.g., database connections) on server startup and cleanup on shutdown.","Okay, here's a semantic summary of the video on MCP (Model Context Protocol), focusing on the topics covered:
+
+What is MCP (Model Context Protocol)?
+
+A protocol for providing services (Tools, Resources, Prompts) to Large Language Models (LLMs). (0:00, 1:46)
+
+Standardizes how LLMs can access and utilize external tools and data sources. (5:18)
+
+How MCP Works:
+
+An ""MCP Tool Service"" (or ""MCP Service"") stores tool information and executes tools. (3:32)
+
+The LLM receives tool information (Tool Info), can make a ""Tool Call"" to the service, and the service returns a ""Tool Response"" which is injected back into the LLM's context. (3:32, 4:44)
+
+Services can be run locally (via stdio - standard input/output) or remotely (HTTP over SSE - Server-Sent Events). (1:46, 27:51)
+
+Using MCP - Inspection & Configuration:
+
+Inspection: How to use npx @modelcontextprotocol/inspector to discover available tools and actions for various MCP services (e.g., Playwright, Puppeteer, GitHub, Stripe). (10:02)
+
+Configuration: MCP servers are typically configured via a JSON file (e.g., mcp.json in Cursor, config.json for custom agents) specifying the command, arguments, and environment variables for each service. (16:56, 31:00, 44:50)
+
+Client Integrations & Examples:
+
+Cursor: Configuring and using MCP servers (Playwright for browser navigation, GitHub for repo access, Stripe for payment info) within the Cursor IDE. (5:00, 16:56)
+
+Windsurf: Similar MCP server configuration method to Cursor. (30:55)
+
+Claude Desktop App: Adding MCP server configurations in the app's developer settings. (32:33)
+
+OpenAI Agents: Integrating MCP servers by passing them as parameters when defining an OpenAI Agent. (35:58)
+
+Custom LLM (with LiteLLM): A detailed walkthrough of using LiteLLM as a bridge to connect any LLM (e.g., Gemini, local models from Hugging Face) with MCP services. This involves creating a custom MCPAgent class to: (42:41)
+
+Translate tool definitions from MCP format to LiteLLM/OpenAI format.
+
+Convert LiteLLM/OpenAI tool calls to MCP tool calls.
+
+Process MCP tool responses (including text and images) back into a format the LLM can understand (e.g., saving image screenshots and then passing image data/URLs in the LLM context).
+
+Tool Examples Demonstrated:
+
+Browser Navigation: Using Playwright and Puppeteer MCPs for tasks like navigating to URLs, taking accessibility snapshots, and (with a ""vision"" tag) taking actual screenshots. (10:02, 21:23, 51:34)
+
+GitHub: Granting and removing user access to GitHub repositories. (23:20, 52:22)
+
+Stripe: Retrieving payment information (briefly shown). (27:00)","{
+    ""detailed_analysis"": ""Both videos focus on the Model Context Protocol (MCP) and its application in connecting Large Language Models (LLMs) to external tools and data sources. They cover the fundamental concepts of MCP, including its purpose to standardize LLM interactions with external services, the client-server architecture, and the transport mechanisms (stdio for local and SSE for remote). Both videos also discuss practical usage, such as inspecting available tools and integrating MCP with various clients and LLMs.\n\nThe first video is a Python-centric crash course that emphasizes hands-on implementation. It covers setting up an MCP server using Python SDK (FastMCP), defining tools with decorators, running the server locally, and testing with MCP Inspector. It also demonstrates client-side integration in Python, including connecting via stdio and SSE, and converting MCP tools to OpenAI function calling format. Additionally, it covers advanced topics like lifecycle management with Lifespan objects and deploying MCP servers with Docker.\n\nThe second video provides a broader overview of MCP with a focus on configuration and integration across multiple platforms and tools. It explains MCP's role in providing services to LLMs and details the protocol's workflow (tool info, tool calls, and responses). It highlights inspection and configuration using JSON files and the MCP Inspector tool. The video showcases various MCP server examples like Playwright, Puppeteer, GitHub, and Stripe, and their integration in different environments such as Cursor IDE, Windsurf, Claude Desktop App, and OpenAI Agents. It also includes a detailed example of using LiteLLM as a bridge to connect any LLM with MCP services, including handling complex tool responses like images.\n\nIn summary, the first video is more technical and Python SDK-focused, ideal for developers wanting to build and deploy MCP servers and clients with code examples. The second video is broader, covering multiple MCP server configurations, integrations, and use cases across different platforms and LLMs, with less emphasis on coding but more on practical applications and configurations.\n\nFirst Video Unique Points:\n- Detailed Python SDK usage for MCP server and client implementation.\n- Use of FastMCP and @mcp.tool() decorator.\n- Demonstration of MCP server deployment with Docker.\n- Lifecycle management with Lifespan object.\n- Conversion of MCP tools to OpenAI function calling format.\n\nSecond Video Unique Points:\n- Focus on MCP server configuration via JSON files.\n- Use of MCP Inspector with various MCP services (Playwright, Puppeteer, GitHub, Stripe).\n- Integration examples in Cursor IDE, Windsurf, Claude Desktop App, and OpenAI Agents.\n- Detailed example of bridging LiteLLM with MCP services.\n- Handling complex tool responses including images.\n\nReasoning:\nThe similarity score is high because both videos cover the same core topic of MCP and its role in connecting LLMs to external tools. However, the approach and depth differ: the first video is a deep dive into Python SDK implementation and server lifecycle, while the second video is broader, covering multiple MCP configurations, integrations, and use cases across platforms. The unique points in each video reflect these differences.\n\nRecommendation:\nSince you already know the basics of MCP servers but have never built one, the first video is recommended for its in-depth, technical, and practical Python SDK approach, which will help you build and deploy MCP servers and clients. The second video is valuable for understanding broader MCP applications and configurations but is less technical. If you want a comprehensive understanding including various MCP use cases and integrations, watching both could be beneficial, but if time is limited, start with the first video for hands-on learning.\n\nSelected Video: first_video\nSimilarity Score: 0.75"",
+    ""reasoning"": ""The similarity score is high because both videos cover the same core topic of MCP and its role in connecting LLMs to external tools. However, the approach and depth differ: the first video is a deep dive into Python SDK implementation and server lifecycle, while the second video is broader, covering multiple MCP configurations, integrations, and use cases across platforms. The unique points in each video reflect these differences."",
+    ""first_video_unique_points"": [
+        ""Detailed Python SDK usage for MCP server and client implementation."",
+        ""Use of FastMCP and @mcp.tool() decorator."",
+        ""Demonstration of MCP server deployment with Docker."",
+        ""Lifecycle management with Lifespan object."",
+        ""Conversion of MCP tools to OpenAI function calling format.""
+    ],
+    ""second_video_unique_points"": [
+        ""Focus on MCP server configuration via JSON files."",
+        ""Use of MCP Inspector with various MCP services (Playwright, Puppeteer, GitHub, Stripe)."",
+        ""Integration examples in Cursor IDE, Windsurf, Claude Desktop App, and OpenAI Agents."",
+        ""Detailed example of bridging LiteLLM with MCP services."",
+        ""Handling complex tool responses including images.""
+    ],
+    ""similarity_score"": 0.75,
+    ""recommendation"": ""Since you already know the basics of MCP servers but have never built one, the first video is recommended for its in-depth, technical, and practical Python SDK approach, which will help you build and deploy MCP servers and clients. The second video is valuable for understanding broader MCP applications and configurations but is less technical. If you want a comprehensive understanding including various MCP use cases and integrations, watching both could be beneficial, but if time is limited, start with the first video for hands-on learning."",
+    ""selected_video"": ""first_video""
+}",first_video,"{
   ""model"": ""openai/gpt-4.1"",
-  ""first_video_author"": ""Felipe Raitano"",
-  ""second_video_author"": ""Dave Ebbelaar""
+  ""first_video_author"": ""Dave Ebbelaar"",
+  ""second_video_author"": ""Trelis Research""
 }"
