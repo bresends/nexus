@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for promptlab on 2025-05-20T20:15:36-03:00
+# fly.toml app configuration file generated for nexuslab on 2025-06-05T19:31:42-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'promptlab'
-primary_region = 'gig'
+app = 'nexuslab'
+primary_region = 'gru'
 
 [build]
 
