@@ -280,6 +280,17 @@
   color: var(--white);
 }
 
+.action-button--copy {
+  background-color: rgba(78, 203, 113, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(78, 203, 113, 0.2);
+}
+
+.action-button--copy:hover {
+  background-color: var(--success);
+  color: var(--white);
+}
+
 .project-form {
   max-width: 100%;
 }

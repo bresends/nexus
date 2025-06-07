@@ -202,6 +202,9 @@
         <a href="{{ url_for('projects.list_projects') }}" class="action-button action-button--back">
             <span class="material-icons action-button__icon">arrow_back</span> Back to Projects
         </a>
+        <button id="copyProjectBtn" class="action-button action-button--copy" title="Copy project data to clipboard">
+            <span class="material-icons action-button__icon">content_copy</span> Copy Project Data
+        </button>
         <a href="{{ url_for('projects.edit_project', project_id=project.id) }}" class="action-button action-button--edit">
             <span class="material-icons action-button__icon">edit</span> Edit Project
         </a>
@@ -209,5 +212,151 @@
             <span class="material-icons action-button__icon">delete</span> Delete
         </a>
     </div>
+
+    <!-- Hidden template for project data -->
+    <script type="application/json" id="projectData">
+{
+  "project": {
+    "name": {{ (project.name or '') | tojson }},
+    "description": {{ (project.description or '') | tojson }},
+    "purpose": {{ (project.purpose or '') | tojson }},
+    "desired_outcome": {{ (project.desired_outcome or '') | tojson }},
+    "created_at": "{{ project.created_at.strftime('%Y-%m-%d %H:%M:%S') if project.created_at else '' }}",
+    "deadline": "{{ project.deadline.strftime('%Y-%m-%d %H:%M:%S') if project.deadline else '' }}",
+    "status": "{{ project.status or '' }}",
+    "priority": "{{ project.priority or '' }}"
+  },
+  "tasks": [
+    {% if project.tasks %}
+    {% for task in project.tasks %}
+    {
+      "name": {{ (task.name or '') | tojson }},
+      "description": {{ (task.description or '') | tojson }},
+      "status": "{{ task.status or '' }}",
+      "priority": "{{ task.priority or '' }}",
+      "due_date": "{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}",
+      "resources": [
+        {% if task.resources %}
+        {% for resource in task.resources %}
+        {
+          "title": {{ (resource.title or '') | tojson }},
+          "url": {{ (resource.url or '') | tojson }},
+          "type": "{{ resource.type or '' }}",
+          "notes": {{ (resource.notes or '') | tojson }},
+          "is_consumed": {{ 'true' if resource.is_consumed else 'false' }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+        {% endif %}
+      ]
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+    {% endif %}
+  ]
+}
+    </script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyBtn = document.getElementById('copyProjectBtn');
+    
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            try {
+                // Get the project data from the JSON script tag
+                const projectDataScript = document.getElementById('projectData');
+                const projectData = JSON.parse(projectDataScript.textContent);
+                
+                // Generate JSON format with the project, tasks, and resources
+                const jsonContent = {
+                    project: {
+                        name: projectData.project.name,
+                        description: projectData.project.description,
+                        purpose: projectData.project.purpose,
+                        desired_outcome: projectData.project.desired_outcome,
+                        created_at: projectData.project.created_at,
+                        deadline: projectData.project.deadline,
+                        status: projectData.project.status,
+                        priority: projectData.project.priority
+                    },
+                    tasks: projectData.tasks.map((task, index) => ({
+                        number: index + 1,
+                        name: task.name,
+                        description: task.description,
+                        status: task.status,
+                        priority: task.priority,
+                        due_date: task.due_date,
+                        resources: task.resources && task.resources.length > 0 
+                            ? task.resources.map((resource, resourceIndex) => ({
+                                number: resourceIndex + 1,
+                                title: resource.title,
+                                url: resource.url,
+                                type: resource.type,
+                                notes: resource.notes,
+                                is_consumed: resource.is_consumed
+                            }))
+                            : []
+                    }))
+                };
+                
+                // Convert to formatted JSON string
+                const jsonString = JSON.stringify(jsonContent, null, 2);
+                
+                // Copy to clipboard with fallback
+                function copyToClipboard(text) {
+                    // Try modern clipboard API first
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        return navigator.clipboard.writeText(text);
+                    } else {
+                        // Fallback for older browsers or non-HTTPS contexts
+                        return new Promise((resolve, reject) => {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            textArea.style.top = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.focus();
+                            textArea.select();
+                            
+                            try {
+                                const result = document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                if (result) {
+                                    resolve();
+                                } else {
+                                    reject(new Error('Copy command failed'));
+                                }
+                            } catch (err) {
+                                document.body.removeChild(textArea);
+                                reject(err);
+                            }
+                        });
+                    }
+                }
+                
+                copyToClipboard(jsonString).then(function() {
+                    // Visual feedback
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<span class="material-icons action-button__icon">check</span> Copied!';
+                    copyBtn.style.backgroundColor = '#28a745';
+                    copyBtn.style.color = 'white';
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        copyBtn.style.backgroundColor = '';
+                        copyBtn.style.color = '';
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy project data. Please try again or check your browser settings.');
+                });
+            } catch (error) {
+                console.error('Error copying project data:', error);
+                alert('Failed to copy project data. Please try again.');
+            }
+        });
+    }
+});
+    </script>
 </div>
 {% endblock %}
