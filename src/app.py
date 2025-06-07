@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from api.routes import projects_bp, prompts_bp
+from api.routes import projects_bp
 from dotenv import load_dotenv
 
 
@@ -9,7 +9,6 @@ load_dotenv()
 def create_app():
     flask_app = Flask(__name__)
     flask_app.register_blueprint(projects_bp)
-    flask_app.register_blueprint(prompts_bp)
     return flask_app
 
 # Create an instance for Gunicorn to find
