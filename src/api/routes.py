@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime
 from models.project import Project
 from models.task import Task
@@ -501,7 +501,13 @@ def update_resource(resource_id):
         resource.is_consumed = bool(request.form.get("is_consumed"))
         db.commit()
         flash("Resource updated successfully.", "success")
-        return redirect(url_for("projects.task_detail", project_id=resource.task.project_id, task_id=resource.task.id))
+        return redirect(
+            url_for(
+                "projects.task_detail",
+                project_id=resource.task.project_id,
+                task_id=resource.task.id,
+            )
+        )
     except exc.SQLAlchemyError as e:
         db.rollback()
         flash(f"Error updating resource: {str(e)}", "danger")
@@ -510,24 +516,38 @@ def update_resource(resource_id):
         db.close()
 
 
-@projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>/resources/new", methods=["GET"])
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/resources/new", methods=["GET"]
+)
 def new_resource_page(project_id, task_id):
     db = SessionLocal()
     try:
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
-        return render_template("resources/create_resource.html", task=task, project_id=project_id)
+        return render_template(
+            "resources/create_resource.html", task=task, project_id=project_id
+        )
     finally:
         db.close()
 
 
-@projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>/resources/create", methods=["POST"])
+@projects_bp.route(
+    "/projects/<int:project_id>/tasks/<int:task_id>/resources/create", methods=["POST"]
+)
 def create_resource(project_id, task_id):
     db = SessionLocal()
     try:
-        task = db.query(Task).filter(Task.id == task_id, Task.project_id == project_id).first()
+        task = (
+            db.query(Task)
+            .filter(Task.id == task_id, Task.project_id == project_id)
+            .first()
+        )
         if not task:
             flash("Task not found.", "danger")
             return redirect(url_for("projects.project_detail", project_id=project_id))
@@ -537,23 +557,33 @@ def create_resource(project_id, task_id):
         notes = request.form.get("notes")
         if not title or not url_ or not type_:
             flash("Title, URL, and Type are required.", "warning")
-            return redirect(url_for("projects.new_resource_page", project_id=project_id, task_id=task_id))
+            return redirect(
+                url_for(
+                    "projects.new_resource_page", project_id=project_id, task_id=task_id
+                )
+            )
         new_resource = Resource(
             title=title,
             url=url_,
             type=type_,
             notes=notes,
             is_consumed=False,
-            task_id=task_id
+            task_id=task_id,
         )
         db.add(new_resource)
         db.commit()
         flash("Resource added successfully.", "success")
-        return redirect(url_for("projects.task_detail", project_id=project_id, task_id=task_id))
+        return redirect(
+            url_for("projects.task_detail", project_id=project_id, task_id=task_id)
+        )
     except exc.SQLAlchemyError as e:
         db.rollback()
         flash(f"Error adding resource: {str(e)}", "danger")
-        return redirect(url_for("projects.new_resource_page", project_id=project_id, task_id=task_id))
+        return redirect(
+            url_for(
+                "projects.new_resource_page", project_id=project_id, task_id=task_id
+            )
+        )
     finally:
         db.close()
 
@@ -571,10 +601,171 @@ def delete_resource(resource_id):
         db.delete(resource)
         db.commit()
         flash("Resource deleted successfully.", "success")
-        return redirect(url_for("projects.task_detail", project_id=project_id, task_id=task_id))
+        return redirect(
+            url_for("projects.task_detail", project_id=project_id, task_id=task_id)
+        )
     except exc.SQLAlchemyError as e:
         db.rollback()
         flash(f"Error deleting resource: {str(e)}", "danger")
         return redirect(url_for("projects.resource_detail", resource_id=resource_id))
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/<int:project_id>/json", methods=["GET"])
+def project_data_json(project_id):
+    """Return project data as JSON including tasks and resources"""
+    db = SessionLocal()
+    try:
+        # Get project with all related data using eager loading with joins
+        from sqlalchemy.orm import joinedload
+
+        project = (
+            db.query(Project)
+            .options(joinedload(Project.tasks).joinedload(Task.resources))
+            .filter(Project.id == project_id)
+            .first()
+        )
+
+        if project is None:
+            return jsonify({"error": "Project not found"}), 404
+
+        def serialize_datetime(dt):
+            """Helper to serialize datetime objects"""
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+
+        def serialize_date(dt):
+            """Helper to serialize date objects"""
+            return dt.strftime("%Y-%m-%d") if dt else None
+
+        # Simple serialization using model attributes directly
+        project_data = {
+            "project": {
+                "id": project.id,
+                "name": project.name,
+                "description": project.description,
+                "purpose": project.purpose,
+                "desired_outcome": project.desired_outcome,
+                "created_at": serialize_datetime(project.created_at),
+                "updated_at": serialize_datetime(project.updated_at),
+                "deadline": serialize_datetime(project.deadline),
+                "status": project.status,
+                "priority": project.priority,
+            },
+            "tasks": [
+                {
+                    "id": task.id,
+                    "project_id": task.project_id,
+                    "name": task.name,
+                    "description": task.description,
+                    "context": task.context,
+                    "status": task.status,
+                    "priority": task.priority,
+                    "sort_order": task.sort_order,
+                    "created_at": serialize_datetime(task.created_at),
+                    "updated_at": serialize_datetime(task.updated_at),
+                    "due_date": serialize_date(task.due_date),
+                    "resources": [
+                        {
+                            "id": resource.id,
+                            "task_id": resource.task_id,
+                            "title": resource.title,
+                            "url": resource.url,
+                            "type": resource.type,
+                            "notes": resource.notes,
+                            "added_at": serialize_datetime(resource.added_at),
+                            "is_consumed": resource.is_consumed,
+                        }
+                        for resource in task.resources
+                    ],
+                }
+                for task in sorted(project.tasks, key=lambda t: t.sort_order or 0)
+            ],
+        }
+
+        return jsonify(project_data)
+
+    except Exception as e:
+        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/all/json", methods=["GET"])
+def all_projects_data_json():
+    """Return all projects data as JSON including tasks and resources"""
+    db = SessionLocal()
+    try:
+        # Get all projects with all related data using eager loading with joins
+        from sqlalchemy.orm import joinedload
+
+        projects = (
+            db.query(Project)
+            .options(joinedload(Project.tasks).joinedload(Task.resources))
+            .all()
+        )
+
+        def serialize_datetime(dt):
+            """Helper to serialize datetime objects"""
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+
+        def serialize_date(dt):
+            """Helper to serialize date objects"""
+            return dt.strftime("%Y-%m-%d") if dt else None
+
+        # Serialize all projects data
+        all_projects_data = {
+            "projects": [
+                {
+                    "project": {
+                        "id": project.id,
+                        "name": project.name,
+                        "description": project.description,
+                        "purpose": project.purpose,
+                        "desired_outcome": project.desired_outcome,
+                        "created_at": serialize_datetime(project.created_at),
+                        "updated_at": serialize_datetime(project.updated_at),
+                        "deadline": serialize_datetime(project.deadline),
+                        "status": project.status,
+                        "priority": project.priority,
+                    },
+                    "tasks": [
+                        {
+                            "id": task.id,
+                            "project_id": task.project_id,
+                            "name": task.name,
+                            "description": task.description,
+                            "context": task.context,
+                            "status": task.status,
+                            "priority": task.priority,
+                            "sort_order": task.sort_order,
+                            "created_at": serialize_datetime(task.created_at),
+                            "updated_at": serialize_datetime(task.updated_at),
+                            "due_date": serialize_date(task.due_date),
+                            "resources": [
+                                {
+                                    "id": resource.id,
+                                    "task_id": resource.task_id,
+                                    "title": resource.title,
+                                    "url": resource.url,
+                                    "type": resource.type,
+                                    "notes": resource.notes,
+                                    "added_at": serialize_datetime(resource.added_at),
+                                    "is_consumed": resource.is_consumed,
+                                }
+                                for resource in task.resources
+                            ],
+                        }
+                        for task in sorted(project.tasks, key=lambda t: t.sort_order or 0)
+                    ],
+                }
+                for project in projects
+            ]
+        }
+
+        return jsonify(all_projects_data)
+
+    except Exception as e:
+        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
     finally:
         db.close()

@@ -1,362 +1,264 @@
-{% extends "base.html" %}
-
-{% block title %}{{ project.name }}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}{{ project.name }}{% endblock %} {%
+block content %}
 <div class="content-container">
-    <!-- Project Header Section -->
-    <div class="project-header">
-        <div>
-            <h1 class="project-header__title">{{ project.name }}</h1>
-            <div class="project-header__meta">
-                {% set status_modifiers = {
-                    'Planning': 'planning',
-                    'In Progress': 'in-progress',
-                    'Completed': 'completed',
-                    'On Hold': 'on-hold'
-                } %}
-                <span class="project-status project-status--{{ status_modifiers.get(project.status, 'planning') }}">
-                    {{ project.status }}
-                </span>
+  <!-- Project Header Section -->
+  <div class="project-header">
+    <div>
+      <h1 class="project-header__title">{{ project.name }}</h1>
+      <div class="project-header__meta">
+        {% set status_modifiers = { 'Planning': 'planning', 'In Progress':
+        'in-progress', 'Completed': 'completed', 'On Hold': 'on-hold' } %}
+        <span
+          class="project-status project-status--{{ status_modifiers.get(project.status, 'planning') }}"
+        >
+          {{ project.status }}
+        </span>
 
-                {% set priority_modifiers = {
-                    'High': 'high',
-                    'Medium': 'medium',
-                    'Low': 'low'
-                } %}
-                <span class="project-priority project-priority--{{ priority_modifiers.get(project.priority, 'medium') }}">
-                    {{ project.priority }} Priority
-                </span>
-            </div>
-        </div>
+        {% set priority_modifiers = { 'High': 'high', 'Medium': 'medium', 'Low':
+        'low' } %}
+        <span
+          class="project-priority project-priority--{{ priority_modifiers.get(project.priority, 'medium') }}"
+        >
+          {{ project.priority }} Priority
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Metadata -->
+  <div class="project-meta">
+    <div class="meta-card">
+      <div class="meta-card__label">Created</div>
+      <div class="meta-card__content">
+        <span class="date-pill">
+          <span class="material-icons date-pill__icon">calendar_today</span>
+          {{ project.created_at.strftime('%b %d, %Y') }}
+        </span>
+      </div>
     </div>
 
-    <!-- Project Metadata -->
-    <div class="project-meta">
-        <div class="meta-card">
-            <div class="meta-card__label">Created</div>
-            <div class="meta-card__content">
-                <span class="date-pill">
-                    <span class="material-icons date-pill__icon">calendar_today</span>
-                    {{ project.created_at.strftime('%b %d, %Y') }}
-                </span>
-            </div>
-        </div>
-
-        <div class="meta-card">
-            <div class="meta-card__label">Deadline</div>
-            <div class="meta-card__content">
-                {% if project.deadline %}
-                    <span class="date-pill">
-                        <span class="material-icons date-pill__icon">event</span>
-                        {{ project.deadline.strftime('%b %d, %Y') }}
-                    </span>
-                {% else %}
-                    <span class="text-muted">No deadline set</span>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="meta-card">
-            <div class="meta-card__label">Updated</div>
-            <div class="meta-card__content">
-                <span class="date-pill">
-                    <span class="material-icons date-pill__icon">update</span>
-                    {{ project.updated_at.strftime('%b %d, %Y') }}
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Project Description Section -->
-    <div class="project-section">
-        <h2 class="project-section__title">
-            <span class="material-icons project-section__icon">description</span>
-            Description
-        </h2>
-        <div class="project-section__content markdown-content">
-            {{ description_html or "No description provided." }}
-        </div>
-    </div>
-
-    <!-- Project Purpose Section -->
-    <div class="project-section">
-        <h2 class="project-section__title">
-            <span class="material-icons project-section__icon">lightbulb</span>
-            Purpose
-        </h2>
-        <div class="project-section__content markdown-content">
-            {{ purpose_html or "No purpose specified." }}
-        </div>
-    </div>
-
-    <!-- Desired Outcome Section -->
-    <div class="project-section">
-        <h2 class="project-section__title">
-            <span class="material-icons project-section__icon">check_circle</span>
-            Desired Outcome
-        </h2>
-        <div class="project-section__content markdown-content">
-            {{ desired_outcome_html or "No desired outcome specified." }}
-        </div>
-    </div>
-
-    <!-- Tasks Section -->
-    <div class="project-section">
-        <h2 class="project-section__title">
-            <span class="material-icons project-section__icon">list_alt</span>
-            Tasks
-        </h2>
-        <div class="project-section__content">
-            {% if tasks %}
-                <div class="table-responsive">
-                    <table class="task-table">
-                        <thead>
-                            <tr class="task-table__header-row">
-                                <th class="task__number-cell">#</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Priority</th>
-                                <th>Due Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tasksList" class="task-table__body">
-                            {% for task in tasks %}
-                            <tr draggable="true" data-task-id="{{ task.id }}" class="task task-table__row">
-                                <td class="task__number-cell task__cell">
-                                    <div class="task__number-wrapper">
-                                        <span class="task__number">{{ task.sort_order + 1 }}</span>
-                                    </div>
-                                    <div class="task__drag-handle">
-                                        <span class="material-icons task__drag-icon">drag_indicator</span>
-                                    </div>
-                                </td>
-                                <td class="task__cell">
-                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task__name-link">
-                                        <strong>{{ task.name }}</strong>
-                                        {% if task.context %}
-                                        <span class="task__context-badge">Context</span>
-                                        {% endif %}
-                                    </a>
-                                </td>
-                                <td class="task__cell">
-                                    <div class="task__description">
-                                        {% if task.description %}{{ task.description }}{% else %}-{% endif %}
-                                    </div>
-                                </td>
-                                <td class="task__cell">
-                                    <span class="task__status task__status--{{ task.status | lower | replace(' ', '-') }}">
-                                        {{ task.status }}
-                                    </span>
-                                </td>
-                                <td class="task__cell">
-                                    <div class="task__priority">
-                                        {% set priority_classes = {
-                                            'High': 'high',
-                                            'Medium': 'medium',
-                                            'Low': 'low'
-                                        } %}
-                                        <span class="task__priority-indicator task__priority-indicator--{{ priority_classes.get(task.priority, 'medium') }}"></span>
-                                        {{ task.priority }}
-                                    </div>
-                                </td>
-                                <td class="task__cell">
-                                    {% if task.due_date %}
-                                    <span class="task__date">{{ task.due_date.strftime('%Y-%m-%d') }}</span>
-                                    {% else %}
-                                    <span class="task__date task__date--empty">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="task__cell task__actions-cell">
-                                    <a href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}" class="task__action task__action--view" title="View Task">
-                                        <span class="material-icons">visibility</span>
-                                    </a>
-                                    <a href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}" class="task__action task__action--edit" title="Edit Task">
-                                        <span class="material-icons">edit</span>
-                                    </a>
-                                    <a href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}" class="task__action task__action--delete" title="Delete Task">
-                                        <span class="material-icons">delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p>No tasks for this project yet. <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}">Add the first task!</a></p>
-            {% endif %}
-        </div>
-        <div class="project-header__actions">
-             <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}" class="btn btn-primary btn-add">
-            <span class="material-icons btn-icon">add</span>
-            New Task
-        </a>
-        </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="project-actions">
-        <a href="{{ url_for('projects.list_projects') }}" class="action-button action-button--back">
-            <span class="material-icons action-button__icon">arrow_back</span> Back to Projects
-        </a>
-        <button id="copyProjectBtn" class="action-button action-button--copy" title="Copy project data to clipboard">
-            <span class="material-icons action-button__icon">content_copy</span> Copy Project Data
-        </button>
-        <a href="{{ url_for('projects.edit_project', project_id=project.id) }}" class="action-button action-button--edit">
-            <span class="material-icons action-button__icon">edit</span> Edit Project
-        </a>
-        <a href="{{ url_for('projects.delete_project', project_id=project.id) }}" class="action-button action-button--delete">
-            <span class="material-icons action-button__icon">delete</span> Delete
-        </a>
-    </div>
-
-    <!-- Hidden template for project data -->
-    <script type="application/json" id="projectData">
-{
-  "project": {
-    "name": {{ (project.name or '') | tojson }},
-    "description": {{ (project.description or '') | tojson }},
-    "purpose": {{ (project.purpose or '') | tojson }},
-    "desired_outcome": {{ (project.desired_outcome or '') | tojson }},
-    "created_at": "{{ project.created_at.strftime('%Y-%m-%d %H:%M:%S') if project.created_at else '' }}",
-    "deadline": "{{ project.deadline.strftime('%Y-%m-%d %H:%M:%S') if project.deadline else '' }}",
-    "status": "{{ project.status or '' }}",
-    "priority": "{{ project.priority or '' }}"
-  },
-  "tasks": [
-    {% if project.tasks %}
-    {% for task in project.tasks %}
-    {
-      "name": {{ (task.name or '') | tojson }},
-      "description": {{ (task.description or '') | tojson }},
-      "status": "{{ task.status or '' }}",
-      "priority": "{{ task.priority or '' }}",
-      "due_date": "{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}",
-      "resources": [
-        {% if task.resources %}
-        {% for resource in task.resources %}
-        {
-          "title": {{ (resource.title or '') | tojson }},
-          "url": {{ (resource.url or '') | tojson }},
-          "type": "{{ resource.type or '' }}",
-          "notes": {{ (resource.notes or '') | tojson }},
-          "is_consumed": {{ 'true' if resource.is_consumed else 'false' }}
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
+    <div class="meta-card">
+      <div class="meta-card__label">Deadline</div>
+      <div class="meta-card__content">
+        {% if project.deadline %}
+        <span class="date-pill">
+          <span class="material-icons date-pill__icon">event</span>
+          {{ project.deadline.strftime('%b %d, %Y') }}
+        </span>
+        {% else %}
+        <span class="text-muted">No deadline set</span>
         {% endif %}
-      ]
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
-    {% endif %}
-  ]
-}
-    </script>
+      </div>
+    </div>
 
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const copyBtn = document.getElementById('copyProjectBtn');
-    
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function() {
-            try {
-                // Get the project data from the JSON script tag
-                const projectDataScript = document.getElementById('projectData');
-                const projectData = JSON.parse(projectDataScript.textContent);
-                
-                // Generate JSON format with the project, tasks, and resources
-                const jsonContent = {
-                    project: {
-                        name: projectData.project.name,
-                        description: projectData.project.description,
-                        purpose: projectData.project.purpose,
-                        desired_outcome: projectData.project.desired_outcome,
-                        created_at: projectData.project.created_at,
-                        deadline: projectData.project.deadline,
-                        status: projectData.project.status,
-                        priority: projectData.project.priority
-                    },
-                    tasks: projectData.tasks.map((task, index) => ({
-                        number: index + 1,
-                        name: task.name,
-                        description: task.description,
-                        status: task.status,
-                        priority: task.priority,
-                        due_date: task.due_date,
-                        resources: task.resources && task.resources.length > 0 
-                            ? task.resources.map((resource, resourceIndex) => ({
-                                number: resourceIndex + 1,
-                                title: resource.title,
-                                url: resource.url,
-                                type: resource.type,
-                                notes: resource.notes,
-                                is_consumed: resource.is_consumed
-                            }))
-                            : []
-                    }))
-                };
-                
-                // Convert to formatted JSON string
-                const jsonString = JSON.stringify(jsonContent, null, 2);
-                
-                // Copy to clipboard with fallback
-                function copyToClipboard(text) {
-                    // Try modern clipboard API first
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        return navigator.clipboard.writeText(text);
-                    } else {
-                        // Fallback for older browsers or non-HTTPS contexts
-                        return new Promise((resolve, reject) => {
-                            const textArea = document.createElement('textarea');
-                            textArea.value = text;
-                            textArea.style.position = 'fixed';
-                            textArea.style.left = '-999999px';
-                            textArea.style.top = '-999999px';
-                            document.body.appendChild(textArea);
-                            textArea.focus();
-                            textArea.select();
-                            
-                            try {
-                                const result = document.execCommand('copy');
-                                document.body.removeChild(textArea);
-                                if (result) {
-                                    resolve();
-                                } else {
-                                    reject(new Error('Copy command failed'));
-                                }
-                            } catch (err) {
-                                document.body.removeChild(textArea);
-                                reject(err);
-                            }
-                        });
-                    }
-                }
-                
-                copyToClipboard(jsonString).then(function() {
-                    // Visual feedback
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<span class="material-icons action-button__icon">check</span> Copied!';
-                    copyBtn.style.backgroundColor = '#28a745';
-                    copyBtn.style.color = 'white';
-                    
-                    setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                        copyBtn.style.backgroundColor = '';
-                        copyBtn.style.color = '';
-                    }, 2000);
-                }).catch(function(err) {
-                    console.error('Failed to copy text: ', err);
-                    alert('Failed to copy project data. Please try again or check your browser settings.');
-                });
-            } catch (error) {
-                console.error('Error copying project data:', error);
-                alert('Failed to copy project data. Please try again.');
-            }
-        });
-    }
-});
-    </script>
+    <div class="meta-card">
+      <div class="meta-card__label">Updated</div>
+      <div class="meta-card__content">
+        <span class="date-pill">
+          <span class="material-icons date-pill__icon">update</span>
+          {{ project.updated_at.strftime('%b %d, %Y') }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Description Section -->
+  <div class="project-section">
+    <h2 class="project-section__title">
+      <span class="material-icons project-section__icon">description</span>
+      Description
+    </h2>
+    <div class="project-section__content markdown-content">
+      {{ description_html or "No description provided." }}
+    </div>
+  </div>
+
+  <!-- Project Purpose Section -->
+  <div class="project-section">
+    <h2 class="project-section__title">
+      <span class="material-icons project-section__icon">lightbulb</span>
+      Purpose
+    </h2>
+    <div class="project-section__content markdown-content">
+      {{ purpose_html or "No purpose specified." }}
+    </div>
+  </div>
+
+  <!-- Desired Outcome Section -->
+  <div class="project-section">
+    <h2 class="project-section__title">
+      <span class="material-icons project-section__icon">check_circle</span>
+      Desired Outcome
+    </h2>
+    <div class="project-section__content markdown-content">
+      {{ desired_outcome_html or "No desired outcome specified." }}
+    </div>
+  </div>
+
+  <!-- Tasks Section -->
+  <div class="project-section">
+    <h2 class="project-section__title">
+      <span class="material-icons project-section__icon">list_alt</span>
+      Tasks
+    </h2>
+    <div class="project-section__content">
+      {% if tasks %}
+      <div class="table-responsive">
+        <table class="task-table">
+          <thead>
+            <tr class="task-table__header-row">
+              <th class="task__number-cell">#</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tasksList" class="task-table__body">
+            {% for task in tasks %}
+            <tr
+              draggable="true"
+              data-task-id="{{ task.id }}"
+              class="task task-table__row"
+            >
+              <td class="task__number-cell task__cell">
+                <div class="task__number-wrapper">
+                  <span class="task__number">{{ task.sort_order + 1 }}</span>
+                </div>
+                <div class="task__drag-handle">
+                  <span class="material-icons task__drag-icon"
+                    >drag_indicator</span
+                  >
+                </div>
+              </td>
+              <td class="task__cell">
+                <a
+                  href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}"
+                  class="task__name-link"
+                >
+                  <strong>{{ task.name }}</strong>
+                  {% if task.context %}
+                  <span class="task__context-badge">Context</span>
+                  {% endif %}
+                </a>
+              </td>
+              <td class="task__cell">
+                <div class="task__description">
+                  {% if task.description %}{{ task.description }}{% else %}-{%
+                  endif %}
+                </div>
+              </td>
+              <td class="task__cell">
+                <span
+                  class="task__status task__status--{{ task.status | lower | replace(' ', '-') }}"
+                >
+                  {{ task.status }}
+                </span>
+              </td>
+              <td class="task__cell">
+                <div class="task__priority">
+                  {% set priority_classes = { 'High': 'high', 'Medium':
+                  'medium', 'Low': 'low' } %}
+                  <span
+                    class="task__priority-indicator task__priority-indicator--{{ priority_classes.get(task.priority, 'medium') }}"
+                  ></span>
+                  {{ task.priority }}
+                </div>
+              </td>
+              <td class="task__cell">
+                {% if task.due_date %}
+                <span class="task__date"
+                  >{{ task.due_date.strftime('%Y-%m-%d') }}</span
+                >
+                {% else %}
+                <span class="task__date task__date--empty">-</span>
+                {% endif %}
+              </td>
+              <td class="task__cell task__actions-cell">
+                <a
+                  href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}"
+                  class="task__action task__action--view"
+                  title="View Task"
+                >
+                  <span class="material-icons">visibility</span>
+                </a>
+                <a
+                  href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}"
+                  class="task__action task__action--edit"
+                  title="Edit Task"
+                >
+                  <span class="material-icons">edit</span>
+                </a>
+                <a
+                  href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}"
+                  class="task__action task__action--delete"
+                  title="Delete Task"
+                >
+                  <span class="material-icons">delete</span>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>
+        No tasks for this project yet.
+        <a href="{{ url_for('projects.new_task_page', project_id=project.id) }}"
+          >Add the first task!</a
+        >
+      </p>
+      {% endif %}
+    </div>
+    <div class="project-header__actions">
+      <a
+        href="{{ url_for('projects.new_task_page', project_id=project.id) }}"
+        class="btn btn-primary btn-add"
+      >
+        <span class="material-icons btn-icon">add</span>
+        New Task
+      </a>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="project-actions">
+    <a
+      href="{{ url_for('projects.list_projects') }}"
+      class="action-button action-button--back"
+    >
+      <span class="material-icons action-button__icon">arrow_back</span> Back to
+      Projects
+    </a>
+    <button
+      id="copyProjectBtn"
+      class="action-button action-button--copy"
+      title="Copy project data to clipboard"
+    >
+      <span class="material-icons action-button__icon">content_copy</span> Copy
+      Project Data
+    </button>
+    <a
+      href="{{ url_for('projects.edit_project', project_id=project.id) }}"
+      class="action-button action-button--edit"
+    >
+      <span class="material-icons action-button__icon">edit</span> Edit Project
+    </a>
+    <a
+      href="{{ url_for('projects.delete_project', project_id=project.id) }}"
+      class="action-button action-button--delete"
+    >
+      <span class="material-icons action-button__icon">delete</span> Delete
+    </a>
+  </div>
+
+  <script>
+    // Set global project ID for use by external scripts
+    window.PROJECT_ID = {{ project.id }};
+  </script>
+  <script src="{{ url_for('static', filename='js/project-actions.js') }}"></script>
 </div>
 {% endblock %}

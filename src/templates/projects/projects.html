@@ -70,10 +70,16 @@
 <div class="content-container">
     <div class="page-header">
         <h1 class="page-title">Projects</h1>
-        <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary btn-add">
-            <span class="material-icons btn-icon">add</span>
-            New Project
-        </a>
+        <div class="page-header-actions">
+            <button id="copyAllProjectsBtn" class="btn btn-outline-secondary btn-rounded me-2">
+                <span class="material-icons btn-icon">content_copy</span>
+                Copy All Projects Data
+            </button>
+            <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary btn-add">
+                <span class="material-icons btn-icon">add</span>
+                New Project
+            </a>
+        </div>
     </div>
 
     <div class="filter-bar mb-4">
@@ -180,4 +186,6 @@
         </table>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/project-actions.js') }}"></script>
 {% endblock %}
