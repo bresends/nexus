@@ -1,10 +1,6 @@
 from dotenv import load_dotenv
-import csv
-import os
-import json
-
-
 from typing import List, Literal
+from datetime import datetime
 
 from langfuse import Langfuse
 from langfuse.decorators import observe, langfuse_context
@@ -12,7 +8,8 @@ from pydantic import BaseModel, Field
 
 from ..config.langfuse_settings import langFuseSettings
 from ..services.llm_factory import LLMFactory
-from datetime import datetime
+from ..database.database import SessionLocal
+from ..models.video_evaluation_dataset import VideoEvaluationDataset
 
 load_dotenv()  # take environment variables
 
@@ -111,54 +108,43 @@ def run_experiment(experiment_name, label):
 
 
 def load_video_summaries_to_dataset():
+    """Load video evaluation data from database to Langfuse dataset."""
     langfuse.create_dataset(
         name="video_summaries",
         description="A dataset containing summaries of YouTube videos for comparison.",
         metadata={"author": "Bruno Resende", "date": "2025-05-31", "type": "benchmark"},
     )
 
-    csv_path = os.path.join(
-        os.path.dirname(__file__), "datasets", "video_summaries.csv"
-    )
-
-    with open(csv_path, "r", encoding="latin-1") as file:
-        csv_reader = csv.DictReader(file)
-        for idx, row in enumerate(csv_reader, 1):
-            # Convert the metadata string to a dictionary if it exists
-            try:
-                metadata = json.loads(row.get("metadata"))
-            except json.JSONDecodeError:
-                print(
-                    f"Warning: Could not parse metadata for row {idx}, using empty dict"
-                )
-                metadata = {}
-
-            # Add the selected video to the metadata
-            metadata["selected_video"] = row["selected_video"]
-
-            # Create input and expected output dictionaries
-            input_data = {
-                "user_background": row["user_background"],
-                "first_video_summary": row["first_video_summary"],
-                "second_video_summary": row["second_video_summary"],
+    db = SessionLocal()
+    try:
+        video_eval_records = db.query(VideoEvaluationDataset).all()
+        
+        for record in video_eval_records:
+            # Create metadata dictionary
+            metadata = {
+                "selected_video": record.selected_video,
+                "model_used": record.model_used,
+                "first_video_author": record.first_video_author,
+                "second_video_author": record.second_video_author,
             }
 
-            try:
-                expected_output = json.loads(row.get("output"))
-            except json.JSONDecodeError:
-                print(
-                    f"Warning: Could not parse expected_output for row {idx}, using empty dict"
-                )
-                expected_output = {}
+            # Create input data
+            input_data = {
+                "user_background": record.user_background,
+                "first_video_summary": record.first_video_summary,
+                "second_video_summary": record.second_video_summary,
+            }
 
             # Upload to Langfuse
             langfuse.create_dataset_item(
-                id=f"video_summary_{idx}",
+                id=f"video_summary_{record.id}",
                 dataset_name="video_summaries",
                 input=input_data,
-                expected_output=expected_output,
+                expected_output=record.expected_output,
                 metadata=metadata,
             )
+    finally:
+        db.close()
 
 
 # Example of how to use the new function (optional, can be removed or adapted)
