@@ -71,12 +71,12 @@
     <div class="page-header">
         <h1 class="page-title">Projects</h1>
         <div class="page-header-actions">
-            <button id="copyAllProjectsBtn" class="btn btn-outline-secondary btn-rounded me-2">
-                <span class="material-icons btn-icon">content_copy</span>
+            <button id="copyAllProjectsBtn" class="button button--secondary me-2">
+                <span class="material-icons button__icon">content_copy</span>
                 Copy All
             </button>
-            <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary btn-add">
-                <span class="material-icons btn-icon">add</span>
+            <a href="{{ url_for('projects.new_project') }}" class="button button--primary">
+                <span class="material-icons button__icon">add</span>
                 New Project
             </a>
         </div>
@@ -171,11 +171,11 @@
                         </div>
                     </td>
                     <td>
-                        <span class="date-pill">{{ project.created_at.strftime('%Y-%m-%d') }}</span>
+                        <span class="date-display">{{ project.created_at.strftime('%Y-%m-%d') }}</span>
                     </td>
                     <td>
                         {% if project.deadline %}
-                        <span class="date-pill">{{ project.deadline.strftime('%Y-%m-%d') }}</span>
+                        <span class="date-display">{{ project.deadline.strftime('%Y-%m-%d') }}</span>
                         {% else %}
                         <span class="text-muted">-</span>
                         {% endif %}
