@@ -1,11 +1,19 @@
 from logging.config import fileConfig
+import sys
+import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-import os
 from dotenv import load_dotenv
-from src.models.project import Base
 from alembic import context
+
+# Add src to the path to fix import issues
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from src.models.project import Base
+from src.models.task import Task
+from src.models.resource import Resource
+from src.models.video_evaluation_dataset import VideoEvaluationDataset
 
 
 load_dotenv()
