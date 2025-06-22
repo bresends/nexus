@@ -63,6 +63,21 @@
   color: #6c757d;
 }
 
+/* Resource modifier - consumed state */
+.resource--consumed {
+  opacity: 0.6;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.resource--consumed .meta-link {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.resource--consumed strong {
+  color: #6c757d;
+}
+
 /* Global table rows transition */
 .task-table__row {
   transition: background-color 0.2s ease;

@@ -182,27 +182,29 @@ block content %}
                 {% endif %}
               </td>
               <td class="task__cell task__actions-cell">
-                <a
-                  href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}"
-                  class="task__action task__action--view"
-                  title="View Task"
-                >
-                  <span class="material-icons">visibility</span>
-                </a>
-                <a
-                  href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}"
-                  class="task__action task__action--edit"
-                  title="Edit Task"
-                >
-                  <span class="material-icons">edit</span>
-                </a>
-                <a
-                  href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}"
-                  class="task__action task__action--delete"
-                  title="Delete Task"
-                >
-                  <span class="material-icons">delete</span>
-                </a>
+                <div class="action-buttons">
+                  <a
+                    href="{{ url_for('projects.task_detail', project_id=project.id, task_id=task.id) }}"
+                    class="action-btn action-btn-view"
+                    title="View Task"
+                  >
+                    <span class="material-icons">visibility</span>
+                  </a>
+                  <a
+                    href="{{ url_for('projects.edit_task_page', project_id=project.id, task_id=task.id) }}"
+                    class="action-btn action-btn-edit"
+                    title="Edit Task"
+                  >
+                    <span class="material-icons">edit</span>
+                  </a>
+                  <a
+                    href="{{ url_for('projects.delete_task_page', project_id=project.id, task_id=task.id) }}"
+                    class="action-btn action-btn-delete"
+                    title="Delete Task"
+                  >
+                    <span class="material-icons">delete</span>
+                  </a>
+                </div>
               </td>
             </tr>
             {% endfor %}

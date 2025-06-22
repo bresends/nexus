@@ -143,7 +143,7 @@
                         <tr
                             draggable="true"
                             data-resource-id="{{ resource.id }}"
-                            class="resource task-table__row"
+                            class="resource task-table__row{% if resource.is_consumed %} resource--consumed{% endif %}"
                         >
                             <td class="task__number-cell task__cell">
                                 <div class="task__number-wrapper">
@@ -160,37 +160,38 @@
                             </td>
                             <td class="task__cell">
                                 {% set type_classes = {
-                                'video': 'badge-video',
-                                'article': 'badge-article',
-                                'paper': 'badge-paper',
-                                'other': 'badge-other'
+                                    'video': 'status-video',
+                                    'article': 'status-article', 
+                                    'paper': 'status-paper',
+                                    'other': 'status-other'
                                 } %}
-                                <span class="resource-type-badge {{ type_classes.get(resource.type, 'badge-other') }}">
+                                <span class="status-badge {{ type_classes.get(resource.type, 'status-other') }}">
                                     {{ resource.type|capitalize }}
                                 </span>
                             </td>
                             <td class="task__cell">
                                 {% if resource.is_consumed %}
-                                <span class="status-badge status-done">Yes</span>
+                                <span class="status-badge status-completed">Consumed</span>
                                 {% else %}
-                                <span class="status-badge status-todo">No</span>
+                                <span class="status-badge status-planning">Not Consumed</span>
                                 {% endif %}
                             </td>
                             <td class="task__cell task__actions-cell">
-                                <a href="{{ url_for('projects.resource_detail', resource_id=resource.id) }}"
-                                    class="task__action task__action--edit" title="Edit Resource">
-                                    <span class="material-icons">edit</span>
-                                </a>
-                                <form method="post"
-                                    action="{{ url_for('projects.delete_resource', resource_id=resource.id) }}"
-                                    style="display:inline;">
-                                    <button type="submit" class="task__action task__action--delete"
-                                        title="Delete Resource"
-                                        onclick="return confirm('Are you sure you want to delete this resource?');"
-                                        style="background:none; border:none; padding:0; margin-left:6px; color:#EA5555; cursor:pointer;">
-                                        <span class="material-icons">delete</span>
-                                    </button>
-                                </form>
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('projects.resource_detail', resource_id=resource.id) }}"
+                                        class="action-btn action-btn-edit" title="Edit Resource">
+                                        <span class="material-icons">edit</span>
+                                    </a>
+                                    <form method="post"
+                                        action="{{ url_for('projects.delete_resource', resource_id=resource.id) }}"
+                                        style="display:inline;">
+                                        <button type="submit" class="action-btn action-btn-delete"
+                                            title="Delete Resource"
+                                            onclick="return confirm('Are you sure you want to delete this resource?');">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
