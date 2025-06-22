@@ -48,6 +48,21 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Task modifier - completed state */
+.task--completed {
+  opacity: 0.6;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.task--completed .task__name-link {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.task--completed .task__description {
+  color: #6c757d;
+}
+
 /* Global table rows transition */
 .task-table__row {
   transition: background-color 0.2s ease;

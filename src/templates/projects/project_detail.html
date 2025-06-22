@@ -121,7 +121,7 @@ block content %}
             <tr
               draggable="true"
               data-task-id="{{ task.id }}"
-              class="task task-table__row"
+              class="task task-table__row{% if task.status == 'done' %} task--completed{% endif %}"
             >
               <td class="task__number-cell task__cell">
                 <div class="task__number-wrapper">

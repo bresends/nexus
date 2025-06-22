@@ -25,4 +25,4 @@ class Task(Base):
     due_date = Column(DateTime, nullable=True)
 
     project = relationship("Project", back_populates="tasks")
-    resources = relationship("Resource", back_populates="task")
+    resources = relationship("Resource", back_populates="task", order_by="Resource.sort_order")

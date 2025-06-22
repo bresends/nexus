@@ -138,10 +138,21 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="resourcesList" class="task-table__body">
                         {% for resource in task.resources %}
-                        <tr class="task-table__row">
-                            <td class="task__number-cell task__cell">{{ loop.index }}</td>
+                        <tr
+                            draggable="true"
+                            data-resource-id="{{ resource.id }}"
+                            class="resource task-table__row"
+                        >
+                            <td class="task__number-cell task__cell">
+                                <div class="task__number-wrapper">
+                                    <span class="task__number">{{ loop.index }}</span>
+                                </div>
+                                <div class="task__drag-handle">
+                                    <span class="material-icons task__drag-icon">drag_indicator</span>
+                                </div>
+                            </td>
                             <td class="task__cell">
                                 <a href="{{ resource.url }}" target="_blank" class="meta-link">
                                     <strong>{{ resource.title }}</strong>
@@ -208,4 +219,6 @@
         </a>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/resource-reorder.js') }}"></script>
 {% endblock %}

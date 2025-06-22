@@ -449,6 +449,35 @@ def reorder_tasks(project_id):
         db.close()
 
 
+@projects_bp.route("/tasks/<int:task_id>/resources/reorder", methods=["POST"])
+def reorder_resources(task_id):
+    db = SessionLocal()
+    try:
+        data = request.get_json()
+        resource_orders = data.get("resourceOrders", [])  # List of {resourceId: int, order: int}
+
+        # Update each resource's order
+        for resource_order in resource_orders:
+            resource_id = resource_order.get("resourceId")
+            new_order = resource_order.get("order")
+            if resource_id is not None and new_order is not None:
+                resource = (
+                    db.query(Resource)
+                    .filter(Resource.id == resource_id, Resource.task_id == task_id)
+                    .first()
+                )
+                if resource:
+                    resource.sort_order = new_order
+
+        db.commit()
+        return {"status": "success"}, 200
+    except Exception as e:
+        db.rollback()
+        return {"status": "error", "message": str(e)}, 500
+    finally:
+        db.close()
+
+
 @projects_bp.route("/projects/<int:project_id>/tasks/<int:task_id>")
 def task_detail(project_id, task_id):
     db = SessionLocal()
@@ -570,6 +599,9 @@ def create_resource(project_id, task_id):
                     "projects.new_resource_page", project_id=project_id, task_id=task_id
                 )
             )
+        # Get the next sort_order for this task
+        max_sort_order = db.query(func.max(Resource.sort_order)).filter(Resource.task_id == task_id).scalar() or -1
+        
         new_resource = Resource(
             title=title,
             url=url_,
@@ -577,6 +609,7 @@ def create_resource(project_id, task_id):
             notes=notes,
             is_consumed=False,
             task_id=task_id,
+            sort_order=max_sort_order + 1,
         )
         db.add(new_resource)
         db.commit()

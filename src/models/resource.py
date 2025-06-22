@@ -13,5 +13,6 @@ class Resource(Base):
     notes = Column(Text)
     added_at = Column(DateTime, default=func.now())
     is_consumed = Column(Boolean, default=False)
+    sort_order = Column(Integer, default=0)
 
     task = relationship("Task", back_populates="resources")

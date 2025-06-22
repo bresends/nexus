@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Running the Application
 - Flask development server: `uv run src/app.py` (runs on 0.0.0.0:5000 with debug enabled)
 - Main CLI pipeline: `uv run  src/main.py` (requires input.txt file in root directory)
+- Assume the development server is always running. So instead of using uv run src/app.py just ask the user to check for the changes.
 
 ### Testing
 - Run tests: `pytest` (configured to test from `tests/` and `src/evals/` directories)
