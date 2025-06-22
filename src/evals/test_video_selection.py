@@ -6,10 +6,10 @@ from langfuse import Langfuse
 from langfuse.decorators import observe, langfuse_context
 from pydantic import BaseModel, Field
 
-from ..config.langfuse_settings import langFuseSettings
-from ..services.llm_factory import LLMFactory
-from ..database.database import SessionLocal
-from ..models.video_evaluation_dataset import VideoEvaluationDataset
+from config.langfuse_settings import langFuseSettings
+from services.llm_factory import LLMFactory
+from database.database import SessionLocal
+from models.video_evaluation_dataset import VideoEvaluationDataset
 
 load_dotenv()  # take environment variables
 
@@ -118,7 +118,7 @@ def load_video_summaries_to_dataset():
     db = SessionLocal()
     try:
         video_eval_records = db.query(VideoEvaluationDataset).all()
-        
+
         for record in video_eval_records:
             # Create metadata dictionary
             metadata = {
@@ -147,8 +147,8 @@ def load_video_summaries_to_dataset():
         db.close()
 
 
-# Example of how to use the new function (optional, can be removed or adapted)
-if __name__ == "__main__":
+def run_all_video_evaluations():
+    """Run all video evaluation experiments and flush results to Langfuse."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Load the video summaries data into the dataset
@@ -174,3 +174,8 @@ if __name__ == "__main__":
     # Assert that all events were sent to the Langfuse API
     langfuse_context.flush()
     langfuse.flush()
+
+
+# Example of how to use the new function (optional, can be removed or adapted)
+if __name__ == "__main__":
+    run_all_video_evaluations()
