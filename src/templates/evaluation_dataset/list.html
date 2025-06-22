@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Video Evaluation Dataset{% endblock %}
+
+{% block content %}
+<!-- Evaluation stats cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card stat-card-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1 stat-card-label">Total Evaluation Cases</h6>
+                        <h2 class="mb-0 stat-card-value">{{ records|length }}</h2>
+                    </div>
+                    <div class="stat-icon-container stat-icon-primary">
+                        <span class="material-icons stat-icon text-primary">analytics</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="page-header">
+        <h1 class="page-title">Video Evaluation Dataset</h1>
+        <div class="page-header-actions">
+            <a href="{{ url_for('projects.new_evaluation_case') }}" class="btn btn-primary btn-add">
+                <span class="material-icons btn-icon">add</span>
+                Add New Case
+            </a>
+        </div>
+    </div>
+
+    {% if records %}
+    <div class="table-responsive">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Background</th>
+                    <th>Selected Video</th>
+                    <th>Model Used</th>
+                    <th>First Video Author</th>
+                    <th>Second Video Author</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>
+                        <span class="fw-semibold text-primary">{{ record.id }}</span>
+                    </td>
+                    <td>
+                        <div class="truncate-text" title="{{ record.user_background }}">
+                            {{ record.user_background }}
+                        </div>
+                    </td>
+                    <td>
+                        {% set video_classes = {
+                            'first_video': 'status-in-progress',
+                            'second_video': 'status-planning',
+                            'both': 'status-completed'
+                        } %}
+                        <span class="status-badge {{ video_classes.get(record.selected_video, 'status-planning') }}">
+                            {{ record.selected_video }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-muted">{{ record.model_used or 'N/A' }}</span>
+                    </td>
+                    <td>{{ record.first_video_author or 'N/A' }}</td>
+                    <td>{{ record.second_video_author or 'N/A' }}</td>
+                    <td>
+                        <span class="date-display">{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{{ url_for('projects.evaluation_case_detail', record_id=record.id) }}" 
+                               class="action-btn action-btn-view" title="View Details">
+                                <span class="material-icons">visibility</span>
+                            </a>
+                            <a href="{{ url_for('projects.edit_evaluation_case', record_id=record.id) }}" 
+                               class="action-btn action-btn-edit" title="Edit">
+                                <span class="material-icons">edit</span>
+                            </a>
+                            <form method="POST" action="{{ url_for('projects.delete_evaluation_case', record_id=record.id) }}" 
+                                  style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this evaluation case?')">
+                                <button type="submit" class="action-btn action-btn-delete" title="Delete">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <span class="material-icons text-muted mb-3" style="font-size: 4rem;">analytics</span>
+        <h4 class="text-muted">No evaluation cases found</h4>
+        <p class="text-muted">Get started by creating your first evaluation case.</p>
+        <a href="{{ url_for('projects.new_evaluation_case') }}" class="btn btn-primary">
+            <span class="material-icons me-2">add</span>Add New Case
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
