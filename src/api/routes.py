@@ -1,13 +1,21 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from datetime import datetime
-from models.project import Project
-from models.task import Task
-from database.database import SessionLocal
+from src.models.project import Project
+from src.models.task import Task
+from src.models.video_evaluation_dataset import VideoEvaluationDataset
+from src.database.database import SessionLocal
 from sqlalchemy import exc, func
-from utils.markdown_helper import md_to_html
-from models.resource import Resource
+from src.utils.markdown_helper import md_to_html
+from src.models.resource import Resource
+import json
 
 projects_bp = Blueprint("projects", __name__)
+
+
+@projects_bp.route("/")
+def dashboard():
+    """Main dashboard page."""
+    return redirect(url_for("projects.list_projects"))
 
 
 @projects_bp.route("/projects")
@@ -767,5 +775,157 @@ def all_projects_data_json():
 
     except Exception as e:
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+    finally:
+        db.close()
+
+
+# Video Evaluation Dataset CRUD routes
+@projects_bp.route("/evaluation-dataset")
+def list_evaluation_dataset():
+    """List all video evaluation dataset entries."""
+    db = SessionLocal()
+    try:
+        evaluation_records = db.query(VideoEvaluationDataset).order_by(VideoEvaluationDataset.id).all()
+        return render_template("evaluation_dataset/list.html", records=evaluation_records)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/evaluation-dataset/new", methods=["GET"])
+def new_evaluation_case():
+    """Show form to create a new evaluation case."""
+    return render_template("evaluation_dataset/create.html")
+
+
+@projects_bp.route("/evaluation-dataset/create", methods=["POST"])
+def create_evaluation_case():
+    """Create a new evaluation case."""
+    db = SessionLocal()
+    try:
+        # Parse expected output JSON
+        expected_output_str = request.form.get("expected_output", "{}")
+        try:
+            expected_output = json.loads(expected_output_str)
+        except json.JSONDecodeError:
+            flash("Invalid JSON format for expected output", "danger")
+            return redirect(url_for("projects.new_evaluation_case"))
+
+        new_record = VideoEvaluationDataset(
+            user_background=request.form.get("user_background", ""),
+            first_video_summary=request.form.get("first_video_summary", ""),
+            first_video_url=request.form.get("first_video_url"),
+            first_video_author=request.form.get("first_video_author"),
+            second_video_summary=request.form.get("second_video_summary", ""),
+            second_video_url=request.form.get("second_video_url"),
+            second_video_author=request.form.get("second_video_author"),
+            expected_output=expected_output,
+            selected_video=request.form.get("selected_video", ""),
+            model_used=request.form.get("model_used"),
+        )
+
+        db.add(new_record)
+        db.commit()
+
+        flash("Evaluation case created successfully.", "success")
+        return redirect(url_for("projects.list_evaluation_dataset"))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error creating evaluation case: {str(e)}", "danger")
+        return redirect(url_for("projects.new_evaluation_case"))
+    finally:
+        db.close()
+
+
+@projects_bp.route("/evaluation-dataset/<int:record_id>")
+def evaluation_case_detail(record_id):
+    """Show details of an evaluation case."""
+    db = SessionLocal()
+    try:
+        record = db.query(VideoEvaluationDataset).filter(VideoEvaluationDataset.id == record_id).first()
+        if record is None:
+            return "Evaluation case not found", 404
+
+        # Pretty format the JSON for display
+        expected_output_json = json.dumps(record.expected_output, indent=2)
+        return render_template("evaluation_dataset/detail.html", record=record, expected_output_json=expected_output_json)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/evaluation-dataset/<int:record_id>/edit", methods=["GET"])
+def edit_evaluation_case(record_id):
+    """Show form to edit an evaluation case."""
+    db = SessionLocal()
+    try:
+        record = db.query(VideoEvaluationDataset).filter(VideoEvaluationDataset.id == record_id).first()
+        if record is None:
+            return "Evaluation case not found", 404
+
+        # Convert expected output to pretty JSON string for editing
+        expected_output_json = json.dumps(record.expected_output, indent=2)
+        return render_template("evaluation_dataset/edit.html", record=record, expected_output_json=expected_output_json)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/evaluation-dataset/<int:record_id>/update", methods=["POST"])
+def update_evaluation_case(record_id):
+    """Update an evaluation case."""
+    db = SessionLocal()
+    try:
+        record = db.query(VideoEvaluationDataset).filter(VideoEvaluationDataset.id == record_id).first()
+        if record is None:
+            flash("Evaluation case not found", "danger")
+            return redirect(url_for("projects.list_evaluation_dataset"))
+
+        # Parse expected output JSON
+        expected_output_str = request.form.get("expected_output", "{}")
+        try:
+            expected_output = json.loads(expected_output_str)
+        except json.JSONDecodeError:
+            flash("Invalid JSON format for expected output", "danger")
+            return redirect(url_for("projects.edit_evaluation_case", record_id=record_id))
+
+        # Update record fields
+        record.user_background = request.form.get("user_background")
+        record.first_video_summary = request.form.get("first_video_summary")
+        record.first_video_url = request.form.get("first_video_url")
+        record.first_video_author = request.form.get("first_video_author")
+        record.second_video_summary = request.form.get("second_video_summary")
+        record.second_video_url = request.form.get("second_video_url")
+        record.second_video_author = request.form.get("second_video_author")
+        record.expected_output = expected_output
+        record.selected_video = request.form.get("selected_video")
+        record.model_used = request.form.get("model_used")
+
+        db.commit()
+        flash("Evaluation case updated successfully.", "success")
+        return redirect(url_for("projects.evaluation_case_detail", record_id=record.id))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error updating evaluation case: {str(e)}", "danger")
+        return redirect(url_for("projects.edit_evaluation_case", record_id=record_id))
+    finally:
+        db.close()
+
+
+@projects_bp.route("/evaluation-dataset/<int:record_id>/delete", methods=["POST"])
+def delete_evaluation_case(record_id):
+    """Delete an evaluation case."""
+    db = SessionLocal()
+    try:
+        record = db.query(VideoEvaluationDataset).filter(VideoEvaluationDataset.id == record_id).first()
+        if record is None:
+            flash("Evaluation case not found", "danger")
+            return redirect(url_for("projects.list_evaluation_dataset"))
+
+        db.delete(record)
+        db.commit()
+        flash("Evaluation case deleted successfully.", "success")
+        return redirect(url_for("projects.list_evaluation_dataset"))
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        flash(f"Error deleting evaluation case: {str(e)}", "danger")
+        return redirect(url_for("projects.list_evaluation_dataset"))
     finally:
         db.close()
