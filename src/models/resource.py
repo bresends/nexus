@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
-from database.database import Base
+from src.database.database import Base
 
 class Resource(Base):
     __tablename__ = "resources"
