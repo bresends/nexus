@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}New Evaluation Case{% endblock %}
+
+{% block content %}
+<div class="content-container">
+    <h1 class="page-title">Create New Evaluation Case</h1>
+    <p class="page-subtitle">Add a new video comparison case for evaluation</p>
+
+    <form method="POST" action="{{ url_for('projects.create_evaluation_case') }}" class="form-card">
+        <div class="form-group">
+            <label for="user_background" class="form-label">User Background</label>
+            <input type="text" class="form-control" id="user_background" name="user_background" required>
+        </div>
+
+        <div class="form-group">
+            <label for="first_video_summary" class="form-label">First Video Summary</label>
+            <textarea class="form-control" id="first_video_summary" name="first_video_summary" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="first_video_url" class="form-label">First Video URL</label>
+            <input type="url" class="form-control" id="first_video_url" name="first_video_url">
+        </div>
+
+        <div class="form-group">
+            <label for="first_video_author" class="form-label">First Video Author</label>
+            <input type="text" class="form-control" id="first_video_author" name="first_video_author">
+        </div>
+
+        <div class="form-group">
+            <label for="second_video_summary" class="form-label">Second Video Summary</label>
+            <textarea class="form-control" id="second_video_summary" name="second_video_summary" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="second_video_url" class="form-label">Second Video URL</label>
+            <input type="url" class="form-control" id="second_video_url" name="second_video_url">
+        </div>
+
+        <div class="form-group">
+            <label for="second_video_author" class="form-label">Second Video Author</label>
+            <input type="text" class="form-control" id="second_video_author" name="second_video_author">
+        </div>
+
+        <div class="form-group">
+            <label for="expected_output" class="form-label">Expected Output <small class="text-muted">(JSON format)</small></label>
+            <textarea class="form-control" id="expected_output" name="expected_output" rows="4" placeholder='{"selected_video": "first_video"}' required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="selected_video" class="form-label">Selected Video</label>
+            <select class="form-control" id="selected_video" name="selected_video" required>
+                <option value="">Select...</option>
+                <option value="first_video">First Video</option>
+                <option value="second_video">Second Video</option>
+                <option value="both">Both</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="model_used" class="form-label">Model Used</label>
+            <select class="form-control" id="model_used" name="model_used">
+                <option value="">Select a model...</option>
+                <optgroup label="OpenAI">
+                    <option value="gpt-4.1" selected>gpt-4.1</option>
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="gpt-4o-mini">gpt-4o-mini</option>
+                    <option value="o1">o1</option>
+                    <option value="o1-mini">o1-mini</option>
+                    <option value="o3-mini">o3-mini</option>
+                    <option value="gpt-4-turbo">gpt-4-turbo</option>
+                    <option value="gpt-4">gpt-4</option>
+                </optgroup>
+                <optgroup label="Anthropic">
+                    <option value="claude-opus-4-20250514">claude-opus-4-20250514</option>
+                    <option value="claude-sonnet-4-20250514">claude-sonnet-4-20250514</option>
+                    <option value="claude-3-7-sonnet-20250219">claude-3-7-sonnet-20250219</option>
+                    <option value="claude-3-5-sonnet-20241022">claude-3-5-sonnet-20241022</option>
+                    <option value="claude-3-5-sonnet-20240620">claude-3-5-sonnet-20240620</option>
+                    <option value="claude-3-5-haiku-20241022">claude-3-5-haiku-20241022</option>
+                </optgroup>
+                <optgroup label="Google">
+                    <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+                    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                    <option value="gemini-2.5-flash-lite-preview-06-17">gemini-2.5-flash-lite-preview-06-17</option>
+                    <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                    <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite</option>
+                </optgroup>
+                <optgroup label="DeepSeek">
+                    <option value="deepseek-r1">deepseek-r1</option>
+                    <option value="deepseek-v3">deepseek-v3</option>
+                </optgroup>
+                <optgroup label="Meta">
+                    <option value="llama-4-maverick">llama-4-maverick</option>
+                    <option value="llama-3.1-405b-instruct">llama-3.1-405b-instruct</option>
+                    <option value="llama-3.1-70b-instruct">llama-3.1-70b-instruct</option>
+                    <option value="llama-3.1-8b-instruct">llama-3.1-8b-instruct</option>
+                </optgroup>
+                <optgroup label="Mistral AI">
+                    <option value="mistral-large-2411">mistral-large-2411</option>
+                    <option value="mistral-medium">mistral-medium</option>
+                    <option value="mistral-small-2412">mistral-small-2412</option>
+                </optgroup>
+                <optgroup label="Other">
+                    <option value="custom">Custom Model</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="action-button action-button--primary">
+                <span class="material-icons action-button__icon">add_circle_outline</span> Create Evaluation Case
+            </button>
+            <a href="{{ url_for('projects.list_evaluation_dataset') }}" class="action-button action-button--secondary">
+                <span class="material-icons action-button__icon">cancel</span> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
