@@ -9,19 +9,25 @@
         <div>
             <h1 class="project-header__title">{{ task.name }}</h1>
             <div class="project-header__meta">
-                <span class="status-badge status-{{ task.status | lower | replace(' ', '-') }}">
+                {% set status_classes = {
+                    'todo': 'status-planning',
+                    'in progress': 'status-in-progress',
+                    'done': 'status-completed',
+                    'blocked': 'status-on-hold'
+                } %}
+                <span class="status-badge {{ status_classes.get(task.status, 'status-planning') }}">
                     {{ task.status }}
                 </span>
 
-                {% set priority_classes = {
-                'High': 'priority-high',
-                'Medium': 'priority-medium',
-                'Low': 'priority-low'
-                } %}
-                <span
-                    class="project-priority project-priority--{{ priority_classes.get(task.priority, 'priority-medium') }}">
-                    {{ task.priority }} Priority
-                </span>
+                <div class="priority">
+                    {% set priority_classes = {
+                        'High': 'priority-high',
+                        'Medium': 'priority-medium',
+                        'Low': 'priority-low'
+                    } %}
+                    <span class="priority-indicator {{ priority_classes.get(task.priority, 'priority-medium') }}"></span>
+                    {{ task.priority }}
+                </div>
             </div>
         </div>
     </div>
