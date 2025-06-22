@@ -1,13 +1,23 @@
 import os
+import sys
 from flask import Flask
-from api.routes import projects_bp
+from flask_cors import CORS
 from dotenv import load_dotenv
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.api.routes import projects_bp
 
 
 load_dotenv()
 
 def create_app():
     flask_app = Flask(__name__)
+    
+    # Enable CORS for all routes
+    CORS(flask_app)
+    
     flask_app.register_blueprint(projects_bp)
     return flask_app
 
