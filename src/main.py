@@ -5,12 +5,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from rich.console import Console
 from rich.syntax import Syntax
-from pipelines.pkm.new_info_for_project_evaluator import NewProjectInfoEvaluatorPipeline
+
 from database.database import SessionLocal
-from models.project import Project
 
 # --- Video Evaluation Experiment Runner ---
 from evals.test_video_selection import run_all_video_evaluations
+from models.project import Project
+from pipelines.pkm.new_info_for_project_evaluator import NewProjectInfoEvaluatorPipeline
 
 
 def run_video_evaluations():

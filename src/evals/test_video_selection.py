@@ -67,6 +67,7 @@ def get_chat_response(
     completion = llm_factory.create_completion(
         response_model=VideoComparisonResponse,
         messages=compiled_prompt,
+        model="openai/gpt-4.1",
     )
 
     return completion

@@ -1,25 +1,29 @@
 import os
 import sys
+
+from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.api.routes import projects_bp
 
-
 load_dotenv()
+
+i = 0
+
 
 def create_app():
     flask_app = Flask(__name__)
-    
+
     # Enable CORS for all routes
     CORS(flask_app)
-    
+
     flask_app.register_blueprint(projects_bp)
     return flask_app
+
 
 # Create an instance for Gunicorn to find
 app = create_app()

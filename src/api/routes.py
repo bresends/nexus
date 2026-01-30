@@ -653,6 +653,30 @@ def delete_resource(resource_id):
         db.close()
 
 
+@projects_bp.route("/resources/<int:resource_id>/toggle-consumed", methods=["POST"])
+def toggle_resource_consumed(resource_id):
+    db = SessionLocal()
+    try:
+        resource = db.query(Resource).filter(Resource.id == resource_id).first()
+        if not resource:
+            return "<span class='status-badge status-planning'>Error</span>", 404
+
+        # Toggle the consumed status
+        resource.is_consumed = not resource.is_consumed
+        db.commit()
+
+        # Return the updated HTML fragment for the consumed status cell
+        if resource.is_consumed:
+            return '<span class="status-badge status-completed">Consumed</span>'
+        else:
+            return '<span class="status-badge status-planning">Not Consumed</span>'
+    except exc.SQLAlchemyError as e:
+        db.rollback()
+        return "<span class='status-badge status-planning'>Error</span>", 500
+    finally:
+        db.close()
+
+
 @projects_bp.route("/projects/<int:project_id>/json", methods=["GET"])
 def project_data_json(project_id):
     """Return project data as JSON including tasks and resources"""
