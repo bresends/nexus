@@ -22,8 +22,48 @@ def dashboard():
 def list_projects():
     db = SessionLocal()
     try:
-        projects = db.query(Project).all()
-        return render_template("projects/projects.html", projects=projects)
+        projects = db.query(Project).filter(Project.is_active == True).all()
+        active_count = len(projects)
+        return render_template("projects/projects.html", projects=projects, active_count=active_count)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/archived")
+def list_archived_projects():
+    db = SessionLocal()
+    try:
+        projects = db.query(Project).filter(Project.is_active == False).all()
+        return render_template("projects/archived_projects.html", projects=projects)
+    finally:
+        db.close()
+
+
+@projects_bp.route("/projects/<int:project_id>/toggle-active", methods=["POST"])
+def toggle_project_active(project_id):
+    db = SessionLocal()
+    try:
+        project = db.query(Project).filter(Project.id == project_id).first()
+        if not project:
+            return "<span class='status-badge status-on-hold'>Error</span>", 404
+
+        # Check 2-project limit when activating
+        if not project.is_active:
+            active_count = db.query(Project).filter(Project.is_active == True).count()
+            if active_count >= 2:
+                return '<span class="status-badge status-on-hold" title="Max 2 active projects">Inactive ⚠️</span>', 200
+
+        # Toggle status
+        project.is_active = not project.is_active
+        db.commit()
+
+        if project.is_active:
+            return '<span class="status-badge status-completed">Active</span>'
+        else:
+            return '<span class="status-badge status-planning">Inactive</span>'
+    except exc.SQLAlchemyError:
+        db.rollback()
+        return "<span class='status-badge status-on-hold'>Error</span>", 500
     finally:
         db.close()
 
@@ -126,6 +166,10 @@ def update_project(project_id):
         project.desired_outcome = request.form.get("desired_outcome")
         project.status = request.form.get("status")
         project.priority = request.form.get("priority")
+
+        # Auto-deactivate completed projects
+        if project.status == "Completed" and project.is_active:
+            project.is_active = False
 
         # Handle deadline (could be empty)
         deadline_str = request.form.get("deadline")
@@ -716,6 +760,7 @@ def project_data_json(project_id):
                 "deadline": serialize_datetime(project.deadline),
                 "status": project.status,
                 "priority": project.priority,
+                "is_active": project.is_active,
             },
             "tasks": [
                 {
@@ -793,6 +838,7 @@ def all_projects_data_json():
                         "deadline": serialize_datetime(project.deadline),
                         "status": project.status,
                         "priority": project.priority,
+                        "is_active": project.is_active,
                     },
                     "tasks": [
                         {

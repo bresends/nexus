@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, func
+from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, func
 from sqlalchemy.orm import relationship
 from src.database.database import Base
 
@@ -17,6 +17,7 @@ class Project(Base):
     deadline = Column(DateTime)
     status = Column(String(50), default="active")
     priority = Column(String(50), default="normal")
+    is_active = Column(Boolean, default=False, nullable=False)
     updated_at = Column(
         DateTime,
         default=func.now(),

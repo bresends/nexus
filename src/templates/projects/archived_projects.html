@@ -1,41 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Projects{% endblock %}
+{% block title %}Archived Projects{% endblock %}
 
 {% block content %}
 <!-- Project stats cards -->
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card stat-card stat-card-primary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1 stat-card-label">Total Projects</h6>
+                        <h6 class="text-muted mb-1 stat-card-label">Archived Projects</h6>
                         <h2 class="mb-0 stat-card-value">{{ projects|length }}</h2>
                     </div>
                     <div class="stat-icon-container stat-icon-primary">
-                        <span class="material-icons stat-icon text-primary">folder</span>
+                        <span class="material-icons stat-icon text-primary">archive</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card stat-card stat-card-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-muted mb-1 stat-card-label">In Progress</h6>
-                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('status', 'equalto', 'In Progress')|list|length }}</h2>
-                    </div>
-                    <div class="stat-icon-container stat-icon-warning">
-                        <span class="material-icons stat-icon text-warning">pending_actions</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card stat-card stat-card-success">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -50,16 +35,16 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card stat-card stat-card-danger">
+    <div class="col-md-4">
+        <div class="card stat-card stat-card-warning">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted mb-1 stat-card-label">High Priority</h6>
-                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('priority', 'equalto', 'High')|list|length }}</h2>
+                        <h6 class="text-muted mb-1 stat-card-label">On Hold</h6>
+                        <h2 class="mb-0 stat-card-value">{{ projects|selectattr('status', 'equalto', 'On Hold')|list|length }}</h2>
                     </div>
-                    <div class="stat-icon-container stat-icon-danger">
-                        <span class="material-icons stat-icon text-danger">priority_high</span>
+                    <div class="stat-icon-container stat-icon-warning">
+                        <span class="material-icons stat-icon text-warning">pending_actions</span>
                     </div>
                 </div>
             </div>
@@ -69,19 +54,11 @@
 
 <div class="content-container">
     <div class="page-header">
-        <h1 class="page-title">Active Projects <span class="badge bg-primary">{{ active_count }}/2</span></h1>
+        <h1 class="page-title">Archived Projects</h1>
         <div class="page-header-actions">
-            <a href="{{ url_for('projects.list_archived_projects') }}" class="button button--secondary me-2">
-                <span class="material-icons button__icon">archive</span>
-                View Archive
-            </a>
-            <button id="copyAllProjectsBtn" class="button button--secondary me-2">
-                <span class="material-icons button__icon">content_copy</span>
-                Copy All
-            </button>
-            <a href="{{ url_for('projects.new_project') }}" class="button button--primary">
-                <span class="material-icons button__icon">add</span>
-                New Project
+            <a href="{{ url_for('projects.list_projects') }}" class="button button--secondary">
+                <span class="material-icons button__icon">arrow_back</span>
+                Back to Active
             </a>
         </div>
     </div>
@@ -93,7 +70,7 @@
                     <span class="input-group-text border-end-0">
                         <span class="material-icons text-muted search-icon">search</span>
                     </span>
-                    <input type="text" class="form-control border-start-0" placeholder="Search projects...">
+                    <input type="text" class="form-control border-start-0" placeholder="Search archived projects...">
                 </div>
             </div>
             <div class="col-lg-8">
@@ -127,7 +104,7 @@
         <table class="modern-table">
             <thead>
                 <tr>
-                    <th>Active</th>
+                    <th>Activate</th>
                     <th>Name</th>
                     <th>Status</th>
                     <th>Description</th>
@@ -145,7 +122,7 @@
                         hx-target="this"
                         hx-swap="innerHTML"
                         style="cursor: pointer;"
-                        title="Click to toggle">
+                        title="Click to activate (max 2 active)">
                         {% if project.is_active %}
                         <span class="status-badge status-completed">Active</span>
                         {% else %}
