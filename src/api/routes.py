@@ -709,11 +709,74 @@ def toggle_resource_consumed(resource_id):
         resource.is_consumed = not resource.is_consumed
         db.commit()
 
-        # Return the updated HTML fragment for the consumed status cell
-        if resource.is_consumed:
-            return '<span class="status-badge status-completed">Consumed</span>'
-        else:
-            return '<span class="status-badge status-planning">Not Consumed</span>'
+        # Get the resource index for display (this is a simplified approach)
+        task_resources = db.query(Resource).filter(Resource.task_id == resource.task_id).order_by(Resource.sort_order).all()
+        resource_index = next((i + 1 for i, r in enumerate(task_resources) if r.id == resource.id), 1)
+
+        # Map resource type to CSS class
+        type_classes = {
+            'video': 'status-video',
+            'article': 'status-article',
+            'paper': 'status-paper',
+            'other': 'status-other'
+        }
+        type_class = type_classes.get(resource.type, 'status-other')
+
+        # Return the entire updated row HTML with proper classes
+        consumed_class = ' resource--consumed' if resource.is_consumed else ''
+        consumed_badge = '<span class="status-badge status-completed">Consumed</span>' if resource.is_consumed else '<span class="status-badge status-planning">Not Consumed</span>'
+
+        row_html = f'''
+        <tr draggable="true"
+            data-resource-id="{resource.id}"
+            class="resource task-table__row{consumed_class}">
+            <td class="task__number-cell task__cell">
+                <div class="task__number-wrapper">
+                    <span class="task__number">{resource_index}</span>
+                </div>
+                <div class="task__drag-handle">
+                    <span class="material-icons task__drag-icon">drag_indicator</span>
+                </div>
+            </td>
+            <td class="task__cell">
+                <a href="{resource.url}" target="_blank" class="meta-link">
+                    <strong>{resource.title}</strong>
+                </a>
+            </td>
+            <td class="task__cell">
+                <span class="status-badge {type_class}">
+                    {resource.type.capitalize()}
+                </span>
+            </td>
+            <td class="task__cell"
+                hx-post="{url_for('projects.toggle_resource_consumed', resource_id=resource.id)}"
+                hx-target="closest tr"
+                hx-swap="outerHTML"
+                style="cursor: pointer;"
+                title="Click to toggle consumed status">
+                {consumed_badge}
+            </td>
+            <td class="task__cell task__actions-cell">
+                <div class="action-buttons">
+                    <a href="{url_for('projects.resource_detail', resource_id=resource.id)}"
+                        class="action-btn action-btn-edit" title="Edit Resource">
+                        <span class="material-icons">edit</span>
+                    </a>
+                    <form method="post"
+                        action="{url_for('projects.delete_resource', resource_id=resource.id)}"
+                        style="display:inline;">
+                        <button type="submit" class="action-btn action-btn-delete"
+                            title="Delete Resource"
+                            onclick="return confirm('Are you sure you want to delete this resource?');">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        '''
+
+        return row_html
     except exc.SQLAlchemyError as e:
         db.rollback()
         return "<span class='status-badge status-planning'>Error</span>", 500

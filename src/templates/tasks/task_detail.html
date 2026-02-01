@@ -171,8 +171,8 @@
                             </td>
                             <td class="task__cell"
                                 hx-post="{{ url_for('projects.toggle_resource_consumed', resource_id=resource.id) }}"
-                                hx-target="this"
-                                hx-swap="innerHTML"
+                                hx-target="closest tr"
+                                hx-swap="outerHTML"
                                 style="cursor: pointer;"
                                 title="Click to toggle consumed status">
                                 {% if resource.is_consumed %}
