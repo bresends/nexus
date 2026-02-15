@@ -30,10 +30,14 @@ block content %}
     <div class="meta-card">
       <div class="meta-card__label">Created</div>
       <div class="meta-card__content">
+        {% if project.created_at %}
         <span class="date-pill">
           <span class="material-icons date-pill__icon">calendar_today</span>
           {{ project.created_at.strftime('%b %d, %Y') }}
         </span>
+        {% else %}
+        <span class="text-muted">Unknown</span>
+        {% endif %}
       </div>
     </div>
 
@@ -54,10 +58,14 @@ block content %}
     <div class="meta-card">
       <div class="meta-card__label">Updated</div>
       <div class="meta-card__content">
+        {% if project.updated_at %}
         <span class="date-pill">
           <span class="material-icons date-pill__icon">update</span>
           {{ project.updated_at.strftime('%b %d, %Y') }}
         </span>
+        {% else %}
+        <span class="text-muted">Unknown</span>
+        {% endif %}
       </div>
     </div>
   </div>
