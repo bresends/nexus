@@ -14,6 +14,7 @@ from src.models.project import Base
 from src.models.task import Task
 from src.models.resource import Resource
 from src.models.video_evaluation_dataset import VideoEvaluationDataset
+from src.models.video_log import VideoLog
 
 
 load_dotenv()
