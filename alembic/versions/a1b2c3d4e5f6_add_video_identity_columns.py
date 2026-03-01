@@ -24,6 +24,14 @@ def upgrade() -> None:
     op.add_column('video_log', sa.Column('video_type', sa.String(20), nullable=True))
 
     op.execute("""
+        DELETE FROM video_log
+        WHERE url NOT LIKE '%/shorts/%'
+          AND url NOT LIKE '%/live/%'
+          AND url NOT LIKE '%watch?v=%'
+          AND url NOT LIKE '%youtu.be/%'
+    """)
+
+    op.execute("""
         UPDATE video_log SET
             video_type = CASE
                 WHEN url LIKE '%/shorts/%' THEN 'shorts'
@@ -36,6 +44,13 @@ def upgrade() -> None:
                 WHEN url LIKE '%watch?v=%' THEN split_part(split_part(url, 'v=', 2), '&', 1)
                 WHEN url LIKE '%youtu.be/%' THEN split_part(split_part(url, 'youtu.be/', 2), '?', 1)
             END
+    """)
+
+    op.execute("""
+        DELETE FROM video_log
+        WHERE id NOT IN (
+            SELECT MIN(id) FROM video_log GROUP BY video_id, video_type
+        )
     """)
 
     op.alter_column('video_log', 'video_id', nullable=False)
